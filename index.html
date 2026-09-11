@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>VetTranslate</title>
-<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' rx='34' fill='rgb(248,217,224)'/><text x='90' y='110' font-family='Arial, sans-serif' font-size='64' font-weight='700' fill='rgb(107,107,107)' text-anchor='middle'>VT</text></svg>">
-<link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' fill='rgb(248,217,224)'/><text x='90' y='110' font-family='Arial, sans-serif' font-size='64' font-weight='700' fill='rgb(107,107,107)' text-anchor='middle'>VT</text></svg>">
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' rx='34' fill='rgb(248,217,224)'/><text x='90' y='110' font-family='Arial, sans-serif' font-size='22' font-weight='700' fill='white' text-anchor='middle'>VT</text></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' fill='rgb(248,217,224)'/><text x='90' y='110' font-family='Arial, sans-serif' font-size='22' font-weight='700' fill='white' text-anchor='middle'>VT</text></svg>">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
 
@@ -80,6 +80,70 @@ body{
   border-radius:var(--radius);
   border:1px solid var(--line);
   padding:16px;
+}
+
+/* API Key Setup */
+.api-setup{
+  background:#FFF9E6;
+  border:1.5px solid var(--wheat-border);
+  border-radius:var(--radius);
+  padding:12px 14px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.api-setup-title{
+  font-family:'Baloo 2',sans-serif;
+  font-size:13px;
+  font-weight:700;
+  color:var(--wheat-ink);
+}
+.api-setup input{
+  width:100%;
+  border:1.5px solid var(--wheat-border);
+  border-radius:8px;
+  padding:9px 12px;
+  font-family:'Inter',sans-serif;
+  font-size:13px;
+  color:var(--ink);
+  background:#FFFBF0;
+}
+.api-setup input:focus{outline:none;border-color:var(--pine);}
+.api-setup-buttons{
+  display:flex;
+  gap:8px;
+}
+.api-setup button{
+  flex:1;
+  border:none;
+  border-radius:8px;
+  padding:8px 12px;
+  font-weight:700;
+  font-size:12px;
+  cursor:pointer;
+}
+.api-save{
+  background:var(--accent);
+  color:var(--accent-ink);
+}
+.api-cancel{
+  background:transparent;
+  color:var(--ink-soft);
+  border:1px solid var(--line);
+}
+.api-status{
+  font-size:11px;
+  padding:6px 8px;
+  border-radius:6px;
+  text-align:center;
+}
+.api-status.ok{
+  background:rgba(183,226,140,0.2);
+  color:var(--accent-ink);
+}
+.api-status.error{
+  background:rgba(193,87,62,0.2);
+  color:var(--danger);
 }
 
 /* Live translate block */
@@ -483,7 +547,7 @@ textarea:focus{outline:none;border-color:var(--pine);}
     <div class="tag">
       <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
         <g transform="translate(9,-2) scale(0.82)">
-          <path d="M32,30 C30,18 40,10 50,13 L60,6 L56,17 C68,17 76,28 75,40 C74,50 68,58 68,66 C68,72 72,76 72,76 L58,76 C58,76 56,68 56,60 C50,62 42,60 38,54 C32,55 26,50 26,42 C26,36 28,32 32,30 Z" fill="white"/>
+          <path d="M32,30 C30,18 40,10 50,13 L60,6 L56,17 C68,17 76,28 75,40 C74,50 68,58 68,66 C68,72 72,76 72,76 L58,76 C58,76 56,68 56,60 C50,62 42,60 38,54 C32,55 26,50 26,42 C26,36 28,32 32,30 Z" fill="currentColor"/>
         </g>
         <circle cx="55" cy="83" r="1.8" fill="white"/>
         <circle cx="59" cy="77" r="2.6" fill="white"/>
@@ -497,6 +561,17 @@ textarea:focus{outline:none;border-color:var(--pine);}
       <h1>VetTranslate</h1>
       <div class="sub">RU · DE · EN · ES</div>
     </div>
+  </div>
+
+  <!-- API KEY SETUP -->
+  <div id="apiSetupPanel" class="card api-setup">
+    <div class="api-setup-title">⚙️ API ключ Anthropic</div>
+    <input type="password" id="apiKeyInput" placeholder="Введите ваш API ключ...">
+    <div class="api-setup-buttons">
+      <button class="api-save" id="apiSaveBtn">Сохранить</button>
+      <button class="api-cancel" id="apiCancelBtn">Отмена</button>
+    </div>
+    <div id="apiStatus"></div>
   </div>
 
   <!-- LIVE TRANSLATION -->
@@ -563,6 +638,7 @@ const LANGUAGE_CATALOG = [
 
 let activeLangs = [...BASE_LANGS];
 let selectedLang = 'de';
+let apiKey = null;
 
 function langInfo(code){
   return activeLangs.find(l => l.code === code) || { code, name: code, locale: 'en-US' };
@@ -585,6 +661,54 @@ function storageSet(key, value){
     return false;
   }
 }
+
+// API Key management
+function loadApiKey(){
+  const stored = storageGet('vet-translate-api-key');
+  if(stored){
+    apiKey = stored.value;
+    updateApiStatus();
+  }else{
+    showApiSetupPanel();
+  }
+}
+
+function showApiSetupPanel(){
+  document.getElementById('apiSetupPanel').style.display = 'flex';
+}
+
+function updateApiStatus(){
+  const statusEl = document.getElementById('apiStatus');
+  const panel = document.getElementById('apiSetupPanel');
+  if(apiKey){
+    statusEl.className = 'api-status ok';
+    statusEl.textContent = '✓ API ключ сохранен';
+    panel.style.opacity = '0.7';
+  }else{
+    statusEl.textContent = '';
+  }
+}
+
+document.getElementById('apiSaveBtn').onclick = ()=>{
+  const input = document.getElementById('apiKeyInput');
+  const key = input.value.trim();
+  if(key.length < 20){
+    const statusEl = document.getElementById('apiStatus');
+    statusEl.className = 'api-status error';
+    statusEl.textContent = 'API ключ слишком короткий';
+    return;
+  }
+  apiKey = key;
+  storageSet('vet-translate-api-key', apiKey);
+  input.value = '';
+  updateApiStatus();
+};
+
+document.getElementById('apiCancelBtn').onclick = ()=>{
+  if(apiKey){
+    document.getElementById('apiSetupPanel').style.display = 'none';
+  }
+};
 
 async function loadLanguages(){
   try{
@@ -653,32 +777,25 @@ document.getElementById('cancelAddLangBtn').onclick = ()=>{
 
 const DEFAULT_CARDS = {
   'Жалобы': [
-    { text: 'Рана\nКогда появилась рана?\nКак была получена травма?\nГде находится рана?\nЕсть ли кровотечение?\nЕсть ли гной или неприятный запах?\nВидна ли кость, сухожилие или мышца?\nЖивотное лижет или чешет рану?\nОбрабатывали ли рану? Чем?\nПолучало ли животное антибиотики или обезболивающие?\nЕсть ли температура или вялость?', favorite: false },
-    { text: 'Хромота\nНа какую лапу хромает?\nПередняя или задняя?\nКогда появилась хромота?\nПосле травмы или без причины?\nНаступает ли на лапу?\nУсиливается ли после прогулки?\nЕсть ли припухлость?\nЕсть ли боль при прикосновении?\nБыли ли подобные случаи раньше?\nПолучало ли обезболивающие?', favorite: false },
-    { text: 'Перелом лапы\nКак произошла травма?\nКогда?\nНаступает ли на лапу?\nЕсть ли открытая рана?\nЕсть ли сильная боль?\nЕсть ли кровотечение?\nБыли ли попытки самостоятельно фиксировать лапу?\nДелали ли рентген?\nПолучало ли обезболивание?', favorite: false },
-    { text: 'Болит ухо\nКакое ухо беспокоит?\nКак давно?\nТрясет ли головой?\nЧешет ли ухо?\nЕсть ли запах?\nЕсть ли выделения?\nКакого цвета выделения?\nЕсть ли боль при прикосновении?\nКупалось ли животное недавно?\nЛечили ли раньше уши?', favorite: false },
-    { text: 'Глаза\nОдин глаз или оба?\nСлезятся или гноятся?\nКакого цвета выделения?\nГлаз открыт полностью?\nЕсть ли покраснение?\nЕсть ли помутнение?\nБыла ли травма?\nЧешет ли глаз?\nИспользовали ли капли?\nЕсть ли ухудшение зрения?', favorite: false },
-    { text: 'Понос\nКогда начался?\nСколько раз в день?\nКонсистенция?\nЦвет?\nЕсть ли кровь?\nЕсть ли слизь?\nЕсть ли рвота?\nАппетит сохранен?\nПьет ли воду?\nМеняли ли корм?\nДавали ли новую еду?\nКонтактировал ли с другими животными?\nЕсть ли вакцинация?', favorite: false },
-    { text: 'Рвота\nКогда началась?\nСколько раз была?\nПосле еды или натощак?\nЕсть ли кровь?\nЕсть ли желчь?\nЧто ел последние сутки?\nЕсть ли понос?\nЕсть ли температура?\nАктивность снижена?\nВозможен ли доступ к токсинам?', favorite: false },
-    { text: 'Подозрение на вирусную инфекцию\nКогда появились симптомы?\nЕсть ли температура?\nЕсть ли кашель?\nЕсть ли насморк?\nЕсть ли выделения из глаз?\nЕсть ли рвота?\nЕсть ли понос?\nВакцинировано ли животное?\nКонтактировало ли с другими животными?\nБыли ли поездки?\nАппетит?\nПьет ли воду?', favorite: false },
-    { text: 'Опухоль\nГде находится образование?\nКогда заметили?\nУвеличивается ли?\nБолезненно ли?\nПодвижное или плотное?\nЕсть ли покраснение?\nЕсть ли язва?\nЕсть ли выделения?\nБыло ли подобное раньше?\nПроводились ли операции?', favorite: false },
-    { text: 'Язва\nГде расположена?\nКак давно появилась?\nУвеличивается ли?\nЕсть ли запах?\nЕсть ли выделения?\nЛижет ли животное?\nЧем обрабатывали?\nЕсть ли диабет или другие хронические болезни?\nБыли ли травмы?', favorite: false },
-    { text: 'Кашель\nКогда начался?\nСухой или влажный?\nЧастота?\nПосле нагрузки?\nЕсть ли одышка?\nЕсть ли температура?\nЕсть ли выделения из носа?\nВакцинировано ли животное?\nКонтакты с другими животными?', favorite: false },
-    { text: 'Насморк\nОдин носовой ход или оба?\nЦвет выделений?\nЕсть ли кровь?\nЕсть ли чихание?\nЕсть ли кашель?\nЕсть ли температура?\nАппетит сохранен?\nЕсть ли затрудненное дыхание?', favorite: false },
-    { text: 'Заболевания ротовой полости\nЕсть ли неприятный запах?\nЕсть ли слюнотечение?\nОтказывается ли от еды?\nЕсть ли кровь?\nЕсть ли припухлость?\nБыли ли травмы?\nЧистят ли зубы?', favorite: false },
-    { text: 'Затрудненное мочеиспускание\nКогда последний раз мочилось?\nЧасто ли пытается?\nЕсть ли кровь?\nЕсть ли боль?\nЕсть ли капли мочи?\nКастрировано ли животное?\nБыли ли подобные случаи?', favorite: false },
-    { text: 'Судороги\nКогда произошел приступ?\nСколько длился?\nПотеря сознания?\nБыли ли раньше?\nПолучает ли лекарства?\nБыли ли травмы головы?\nВозможен ли контакт с ядами?', favorite: false },
-    { text: 'Отказ от еды\nКогда перестало есть?\nПьет ли воду?\nЕсть ли рвота?\nЕсть ли понос?\nЕсть ли температура?\nБыли ли изменения корма?\nЕсть ли боль?', favorite: false },
-    { text: 'Общий первичный прием\nВид животного\nПорода\nВозраст\nПол\nВес\nСтерилизовано/кастрировано\nЖалоба владельца\nКогда появились симптомы?\nЧем кормили последние дни?\nЕсть ли хронические заболевания?\nКакие лекарства получает?\nЕсть ли аллергии?\nПоследняя вакцинация\nПоследняя дегельминтизация\nОбработка от блох и клещей\nКонтакт с другими животными\nСвободный выгул или домашнее содержание', favorite: false }
+    { text: 'Рана\nКогда появилась рана?\nКак была получена травма?\nГде находится рана?\nЕсть ли кровотечение?\nЕсть ли гной?', favorite: false },
+    { text: 'Хромота\nНа какую лапу хромает?\nПередняя или задняя?\nКогда появилась хромота?\nПосле травмы?', favorite: false },
+    { text: 'Перелом лапы\nКак произошла травма?\nКогда?\nНаступает ли на лапу?\nЕсть ли открытая рана?', favorite: false },
+    { text: 'Болит ухо\nКакое ухо беспокоит?\nКак давно?\nТрясет ли головой?\nЧешет ли ухо?', favorite: false },
+    { text: 'Глаза\nОдин глаз или оба?\nСлезятся или гноятся?\nКакого цвета выделения?', favorite: false },
+    { text: 'Понос\nКогда начался?\nСколько раз в день?\nКонсистенция?\nЕсть ли кровь?', favorite: false },
+    { text: 'Рвота\nКогда началась?\nСколько раз?\nПосле еды или натощак?\nЕсть ли кровь?', favorite: false },
+    { text: 'Кашель\nКогда начался?\nСухой или влажный?\nЧастота?\nПосле нагрузки?', favorite: false },
+    { text: 'Насморк\nОдин носовой ход или оба?\nЦвет выделений?\nЕсть ли кровь?', favorite: false },
+    { text: 'Отказ от еды\nКогда перестало есть?\nПьет ли воду?\nЕсть ли рвота?', favorite: false }
   ],
   'Ответы': [
     { text: 'Да', favorite: false },
     { text: 'Нет', favorite: false },
     { text: 'Не знаю точно, уточню у врача', favorite: false },
-    { text: 'Нужно сделать анализы, чтобы понять точнее', favorite: false },
-    { text: 'Подождите, пожалуйста, немного', favorite: false }
+    { text: 'Нужно сделать анализы', favorite: false },
+    { text: 'Подождите, пожалуйста', favorite: false }
   ],
-  'Некоторые слова': [
+  'Слова': [
     { text: 'Кот', favorite: false },
     { text: 'Собака', favorite: false },
     { text: 'Лапа', favorite: false },
@@ -686,12 +803,8 @@ const DEFAULT_CARDS = {
     { text: 'Ухо', favorite: false }
   ],
   'Лекарства': [
-    { text: 'Давайте препарат утром и вечером, во время еды.', favorite: false },
-    { text: 'Курс лечения — десять дней, не прерывайте его раньше времени.', favorite: false }
-  ],
-  'Ресепшн': [
-    { text: 'Это лекарство можно купить в нашей аптеке или в обычной аптеке в городе.', favorite: false },
-    { text: 'Следующий приём запишем через неделю.', favorite: false }
+    { text: 'Препарат утром и вечером, во время еды', favorite: false },
+    { text: 'Курс — десять дней, не прерывайте раньше', favorite: false }
   ]
 };
 
@@ -919,17 +1032,30 @@ function escapeHtml(str){
 }
 
 async function translate(text, targetLang){
+  if(!apiKey){
+    throw new Error('API ключ не установлен');
+  }
   const targetName = langInfo(targetLang).name;
   const response = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { 
+      "Content-Type": "application/json",
+      "x-api-key": apiKey,
+      "anthropic-version": "2023-06-01"
+    },
     body: JSON.stringify({
-      model: "claude-sonnet-4-6",
+      model: "claude-3-5-sonnet-20241022",
       max_tokens: 1000,
-      system: `You are a translation engine for a veterinary clinic receptionist. Detect the input language automatically. Translate the given text accurately into ${targetName}, preserving veterinary and medical terminology precision. If the text has multiple lines, translate line by line and preserve the exact same line breaks and emoji in the output. Respond with ONLY the translated text — no quotes, no explanations, no language labels, nothing else.`,
+      system: `You are a translation engine for a veterinary clinic receptionist. Detect the input language automatically. Translate the given text accurately into ${targetName}, preserving veterinary terminology and clarity.`,
       messages: [{ role: "user", content: text }]
     })
   });
+  
+  if(!response.ok){
+    const error = await response.json();
+    throw new Error(error.error?.message || 'Translation error');
+  }
+  
   const data = await response.json();
   const block = (data.content || []).find(b => b.type === 'text');
   return block ? block.text.trim() : '';
@@ -945,11 +1071,9 @@ if('speechSynthesis' in window){
 }
 
 function pickVoice(localeCode){
-  const wantLang = localeCode.split('-')[0]; // e.g. 'ru' from 'ru-RU'
+  const wantLang = localeCode.split('-')[0];
   if(cachedVoices.length === 0) refreshVoices();
-  // 1) exact locale match, e.g. 'ru-RU'
   let voice = cachedVoices.find(v => v.lang.toLowerCase() === localeCode.toLowerCase());
-  // 2) same language prefix, e.g. any 'ru-*'
   if(!voice) voice = cachedVoices.find(v => v.lang.toLowerCase().startsWith(wantLang + '-') || v.lang.toLowerCase() === wantLang);
   return voice || null;
 }
@@ -965,13 +1089,11 @@ function speak(text, lang){
     if(voice){
       utter.voice = voice;
     } else {
-      // No matching voice installed on this device — skip rather than risk
-      // the browser silently substituting a voice from a different language.
-      console.warn('No voice found for', localeCode, '— speech skipped.');
+      console.warn('No voice found for', localeCode);
       return;
     }
     window.speechSynthesis.speak(utter);
-  }catch(e){ /* speech not available, silently skip */ }
+  }catch(e){ /* speech not available */ }
 }
 
 // --- Live translation block ---
@@ -980,6 +1102,10 @@ const outputWrap = document.getElementById('outputWrap');
 const outputText = document.getElementById('outputText');
 
 translateBtn.onclick = async ()=>{
+  if(!apiKey){
+    showApiSetupPanel();
+    return;
+  }
   const text = document.getElementById('inputText').value.trim();
   if(!text) return;
   translateBtn.disabled = true;
@@ -990,7 +1116,7 @@ translateBtn.onclick = async ()=>{
     const result = await translate(text, selectedLang);
     outputText.textContent = result;
   }catch(e){
-    outputText.textContent = 'Не получилось перевести. Проверьте соединение и попробуйте снова.';
+    outputText.textContent = 'Ошибка: ' + e.message;
   }finally{
     translateBtn.disabled = false;
     translateBtn.textContent = 'Перевести';
@@ -998,37 +1124,32 @@ translateBtn.onclick = async ()=>{
 };
 
 document.getElementById('speakBtn').onclick = ()=>{
-  speak(outputText.textContent, selectedLang);
+  const text = document.getElementById('outputText').textContent;
+  if(text) speak(text, selectedLang);
 };
 
 document.getElementById('copyBtn').onclick = ()=>{
-  navigator.clipboard.writeText(outputText.textContent).catch(()=>{});
-  const btn = document.getElementById('copyBtn');
-  const original = btn.textContent;
-  btn.textContent = '✓ Скопировано';
-  setTimeout(()=>{ btn.textContent = original; }, 1200);
+  const text = document.getElementById('outputText').textContent;
+  if(text) navigator.clipboard.writeText(text);
 };
 
 document.getElementById('addCardBtn').onclick = async ()=>{
   const input = document.getElementById('newCardText');
   const text = input.value.trim();
-  if(!text) return;
-  if(!cards[activeTab]) cards[activeTab] = [];
-  cards[activeTab].push({ text, favorite: false });
-  await saveCards();
-  input.value = '';
-  renderPhrases();
+  if(text){
+    if(!cards[activeTab]) cards[activeTab] = [];
+    cards[activeTab].push({ text, favorite: false });
+    await saveCards();
+    input.value = '';
+    renderPhrases();
+  }
 };
 
-document.getElementById('newCardText').addEventListener('keydown', (e)=>{
-  if(e.key === 'Enter') document.getElementById('addCardBtn').click();
-});
-
-(async function init(){
-  await loadLanguages();
-  renderLangChips();
-  await loadCards();
-})();
+// Initialize
+loadApiKey();
+loadLanguages();
+loadCards();
+renderLangChips();
 </script>
 </body>
 </html>
