@@ -516,6 +516,47 @@ textarea:focus{outline:none;border-color:var(--pine);}
 }
 @keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
 
+[hidden]{display:none !important;}
+.legacy-banner{
+  background:rgba(255,213,64,0.14);
+  border:1.5px solid var(--wheat-border);
+  border-radius:12px;
+  padding:12px 14px;
+  font-size:14px;
+  line-height:1.45;
+  color:var(--ink);
+}
+.modal-backdrop{
+  position:fixed;
+  inset:0;
+  background:rgba(31,43,36,0.35);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:16px;
+  z-index:10;
+}
+.modal{
+  background:var(--surface);
+  border-radius:var(--radius);
+  padding:18px;
+  width:100%;
+  max-width:360px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.modal input{
+  border:1.5px solid var(--line);
+  border-radius:10px;
+  padding:10px 12px;
+  font-family:'Inter',sans-serif;
+  font-size:16px;
+  color:var(--ink);
+  background:#FBFCFA;
+}
+.modal input:focus{outline:none;border-color:var(--pine);}
+
 @media (prefers-reduced-motion: reduce){
   .loading-dot{animation:none;}
 }
@@ -581,6 +622,14 @@ textarea:focus{outline:none;border-color:var(--pine);}
       <button type="button" id="exportCardsBtn" class="export-btn">Экспорт карточек</button>
     </div>
     <div class="tabs" id="tabs"></div></div>
+    <div class="legacy-banner" id="legacyBanner" hidden>
+      <div id="legacyText"></div>
+      <div class="edit-actions">
+        <button type="button" class="edit-save" id="legacyUploadBtn">Добавить на сайт</button>
+        <button type="button" class="edit-cancel" id="legacyDismissBtn">Не добавлять</button>
+      </div>
+    </div>
+    <div class="hint" id="syncStatus" hidden></div>
     <div class="phrase-list" id="phraseList"></div>
 
     <div class="add-card">
@@ -590,6 +639,18 @@ textarea:focus{outline:none;border-color:var(--pine);}
     <div class="hint">Карточка переводится на язык, который выбран кнопкой на ней самой — язык можно менять для каждой карточки отдельно.</div>
   </div>
 
+</div>
+
+<div class="modal-backdrop" id="passwordModal" hidden>
+  <form class="modal" id="passwordForm">
+    <div class="section-title">Пароль для изменений</div>
+    <div class="hint" id="passwordHint"></div>
+    <input type="password" id="passwordInput" autocomplete="current-password">
+    <div class="edit-actions">
+      <button type="submit" class="edit-save">Войти</button>
+      <button type="button" class="edit-cancel" id="passwordCancelBtn">Отмена</button>
+    </div>
+  </form>
 </div>
 
 <script>
@@ -639,6 +700,9 @@ function storageSet(key, value){
     console.error('storage error', e);
     return false;
   }
+}
+function storageRemove(key){
+  try{ localStorage.removeItem(key); }catch(e){}
 }
 
 async function loadLanguages(){
@@ -755,48 +819,172 @@ const DEFAULT_CARDS = {
 
 const FAVORITES_TAB = '__favorites__';
 
+// Cards live on the server (worker/) so every device sees the same ones.
+// DEFAULT_CARDS are shown until the first edit saves them there.
+// Viewing is open; editing needs a password, remembered on each device.
+const API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+  ? 'http://localhost:8787'
+  : 'https://vettranslate-api.kotsergeyiber.workers.dev';
+const CARDS_CACHE_KEY = 'vet-translate-cards-cache';
+const LEGACY_CARDS_KEY = 'vet-translate-cards'; // cards saved only in this browser (before the server)
+const PASSWORD_KEY = 'vet-translate-edit-password';
+
 let cards = null;
 let activeTab = 'Жалобы';
 
-function migrateCards(loadedCards){
-  Object.keys(loadedCards).forEach(cat=>{
-    loadedCards[cat] = loadedCards[cat].map(item => ({
-      text: item.text,
-      favorite: item.favorite === true
-    }));
+function newId(){
+  return crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
+}
+
+function withIds(source){
+  const out = {};
+  Object.keys(source).forEach(cat=>{
+    out[cat] = source[cat].map(item => ({ id: item.id || newId(), text: item.text, favorite: item.favorite === true }));
   });
-  Object.keys(DEFAULT_CARDS).forEach(cat=>{
-    if(!loadedCards[cat]){
-      loadedCards[cat] = DEFAULT_CARDS[cat];
-    }
-  });
-  return loadedCards;
+  return out;
+}
+
+function applyServerCards(state){
+  if(state.cards){
+    cards = state.cards;
+    storageSet(CARDS_CACHE_KEY, JSON.stringify(cards));
+  }else{
+    cards = withIds(DEFAULT_CARDS);
+  }
+  if(activeTab !== FAVORITES_TAB && !cards[activeTab]) activeTab = Object.keys(cards)[0] || FAVORITES_TAB;
+}
+
+function setSyncStatus(text){
+  const el = document.getElementById('syncStatus');
+  el.textContent = text;
+  el.hidden = !text;
 }
 
 async function loadCards(){
-  let needsSave = false;
+  const cached = storageGet(CARDS_CACHE_KEY);
+  if(cached){
+    try{ cards = JSON.parse(cached.value); }catch(e){ cards = null; }
+    if(cards){ renderTabs(); renderPhrases(); }
+  }
   try{
-    const res = storageGet('vet-translate-cards');
-    if(res){
-      const parsed = JSON.parse(res.value);
-      const beforeKeys = Object.keys(parsed).length;
-      cards = migrateCards(parsed);
-      if(Object.keys(cards).length !== beforeKeys) needsSave = true;
-    }else{
-      cards = DEFAULT_CARDS;
-      needsSave = true;
-    }
+    const res = await fetch(API_BASE + '/cards', { cache: 'no-store' });
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    applyServerCards(await res.json());
+    setSyncStatus('');
+    checkLegacyCards();
   }catch(e){
-    cards = DEFAULT_CARDS;
-    needsSave = true;
+    if(!cards) cards = withIds(DEFAULT_CARDS);
+    setSyncStatus('Нет связи с сервером — карточки могут быть устаревшими.');
   }
   renderTabs();
   renderPhrases();
-  if(needsSave) await saveCards();
 }
 
-async function saveCards(){
-  storageSet('vet-translate-cards', JSON.stringify(cards));
+function getEditPassword(message){
+  const saved = storageGet(PASSWORD_KEY);
+  if(saved && !message) return Promise.resolve(saved.value);
+  const modal = document.getElementById('passwordModal');
+  const input = document.getElementById('passwordInput');
+  document.getElementById('passwordHint').textContent = message || 'Нужен один раз на этом устройстве.';
+  input.value = '';
+  modal.hidden = false;
+  input.focus();
+  return new Promise(resolve=>{
+    document.getElementById('passwordForm').onsubmit = (ev)=>{
+      ev.preventDefault();
+      if(!input.value) return;
+      storageSet(PASSWORD_KEY, input.value);
+      modal.hidden = true;
+      resolve(input.value);
+    };
+    document.getElementById('passwordCancelBtn').onclick = ()=>{
+      modal.hidden = true;
+      resolve(null);
+    };
+  });
+}
+
+async function postCardsOp(op, password){
+  const res = await fetch(API_BASE + '/cards', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Edit-Password': password },
+    body: JSON.stringify(op)
+  });
+  return { res, data: await res.json().catch(()=>({})) };
+}
+
+// Sends one edit to the server and re-renders with the result. Returns true if saved.
+async function editCards(op, passwordMessage){
+  const password = await getEditPassword(passwordMessage);
+  if(password === null) return false;
+  setSyncStatus('Сохраняем…');
+  try{
+    let { res, data } = await postCardsOp(op, password);
+    if(res.status === 409 && data.error === 'empty'){
+      // Nothing saved on the server yet: save the cards shown now, then apply the edit.
+      ({ res, data } = await postCardsOp({ type: 'import', cards }, password));
+      if(res.ok) ({ res, data } = await postCardsOp(op, password));
+    }
+    if(res.status === 401){
+      storageRemove(PASSWORD_KEY);
+      setSyncStatus('');
+      return editCards(op, 'Неверный пароль, попробуйте ещё раз.');
+    }
+    if(res.status === 429){
+      setSyncStatus('Слишком много неверных попыток. Попробуйте через 15 минут.');
+      return false;
+    }
+    if(!res.ok){
+      setSyncStatus('Не удалось сохранить (' + (data.message || data.error || res.status) + '). Обновите страницу и попробуйте снова.');
+      return false;
+    }
+    applyServerCards(data);
+    setSyncStatus('');
+    renderTabs();
+    renderPhrases();
+    return true;
+  }catch(e){
+    setSyncStatus('Нет связи с сервером — изменения не сохранены.');
+    return false;
+  }
+}
+
+function legacyCardsMissing(legacyCards){
+  let missing = 0;
+  Object.keys(legacyCards).forEach(cat=>{
+    (Array.isArray(legacyCards[cat]) ? legacyCards[cat] : []).forEach(item=>{
+      const text = typeof item.text === 'string' ? item.text.trim() : '';
+      if(!text) return;
+      const match = (cards[cat] || []).find(c => c.text === text);
+      if(!match || (item.favorite === true && !match.favorite)) missing++;
+    });
+  });
+  return missing;
+}
+
+function archiveLegacyCards(){
+  const legacy = storageGet(LEGACY_CARDS_KEY);
+  if(legacy) storageSet(LEGACY_CARDS_KEY + '-backup', legacy.value);
+  storageRemove(LEGACY_CARDS_KEY);
+  document.getElementById('legacyBanner').hidden = true;
+}
+
+// Offers to upload cards that were saved only in this browser by the old version.
+function checkLegacyCards(){
+  const legacy = storageGet(LEGACY_CARDS_KEY);
+  if(!legacy) return;
+  let legacyCards;
+  try{ legacyCards = JSON.parse(legacy.value); }catch(e){ return; }
+  if(!legacyCards || typeof legacyCards !== 'object') return;
+  const missing = legacyCardsMissing(legacyCards);
+  if(missing === 0){ archiveLegacyCards(); return; }
+  document.getElementById('legacyText').textContent =
+    `В этом браузере есть карточки, которых нет на сайте (${missing}). Добавить их на сайт, чтобы они были видны на всех устройствах?`;
+  document.getElementById('legacyBanner').hidden = false;
+  document.getElementById('legacyUploadBtn').onclick = async ()=>{
+    if(await editCards({ type: 'import', cards: legacyCards })) archiveLegacyCards();
+  };
+  document.getElementById('legacyDismissBtn').onclick = archiveLegacyCards;
 }
 
 document.getElementById('exportCardsBtn').addEventListener('click', ()=>{
@@ -835,13 +1023,13 @@ function getEntries(){
   if(activeTab === FAVORITES_TAB){
     const entries = [];
     Object.keys(cards).forEach(cat=>{
-      cards[cat].forEach((item, idx)=>{
-        if(item.favorite) entries.push({ cat, idx, item });
+      cards[cat].forEach(item=>{
+        if(item.favorite) entries.push(item);
       });
     });
     return entries;
   }
-  return (cards[activeTab] || []).map((item, idx)=>({ cat: activeTab, idx, item }));
+  return cards[activeTab] || [];
 }
 
 let expandedKey = null;
@@ -881,8 +1069,8 @@ function renderPhrases(){
     list.appendChild(empty);
     return;
   }
-  entries.forEach(({cat, idx, item})=>{
-    const key = cat + '-' + idx;
+  entries.forEach(item=>{
+    const key = item.id;
     const isOpen = expandedKey === key;
     const el = document.createElement('div');
     el.className = 'phrase' + (isOpen ? ' open' : '');
@@ -895,7 +1083,7 @@ function renderPhrases(){
       </div>
       <div class="phrase-collapsible" ${isOpen ? '' : 'style="display:none;"'}>
         ${body ? `<div class="phrase-text">${escapeHtml(body)}</div>` : ''}
-        <div class="phrase-output" id="pout-${cat}-${idx}"></div>
+        <div class="phrase-output"></div>
         <div class="phrase-actions">
           ${chipsHtml}
           <button class="star-btn ${item.favorite ? 'active':''}" title="В избранное">${item.favorite ? '★' : '☆'}</button>
@@ -929,43 +1117,36 @@ function renderPhrases(){
       });
       el.querySelector('.star-btn').onclick = async (ev)=>{
         ev.stopPropagation();
-        cards[cat][idx].favorite = !cards[cat][idx].favorite;
-        await saveCards();
-        renderPhrases();
+        await editCards({ type: 'favorite', id: item.id, value: !item.favorite });
       };
       el.querySelector('.edit-btn').onclick = (ev)=>{
         ev.stopPropagation();
-        enterEditMode(el, cat, idx, item.text);
+        enterEditMode(el, item);
       };
       el.querySelector('.phrase-del').onclick = async (ev)=>{
         ev.stopPropagation();
-        cards[cat].splice(idx,1);
-        if(expandedKey === key) expandedKey = null;
-        await saveCards();
-        renderPhrases();
+        if(!confirm('Удалить карточку «' + cardTitle(item.text) + '»?')) return;
+        await editCards({ type: 'delete', id: item.id });
       };
     }
     list.appendChild(el);
   });
 }
 
-function enterEditMode(el, cat, idx, currentText){
+function enterEditMode(el, item){
   el.innerHTML = `
-    <textarea class="edit-textarea">${currentText}</textarea>
+    <textarea class="edit-textarea">${escapeHtml(item.text)}</textarea>
     <div class="edit-actions">
       <button class="edit-save">Сохранить</button>
       <button class="edit-cancel">Отмена</button>
     </div>
   `;
   const textarea = el.querySelector('.edit-textarea');
-  textarea.style.minHeight = Math.max(76, currentText.split('\n').length * 22) + 'px';
+  textarea.style.minHeight = Math.max(76, item.text.split('\n').length * 22) + 'px';
   el.querySelector('.edit-save').onclick = async ()=>{
     const newText = textarea.value.trim();
-    if(newText){
-      cards[cat][idx].text = newText;
-      await saveCards();
-    }
-    renderPhrases();
+    if(!newText || newText === item.text){ renderPhrases(); return; }
+    await editCards({ type: 'update', id: item.id, text: newText });
   };
   el.querySelector('.edit-cancel').onclick = ()=>{ renderPhrases(); };
 }
@@ -989,13 +1170,8 @@ function escapeHtml(str){
   return d.innerHTML;
 }
 
-// Translation goes through our Cloudflare Worker (worker/), which holds the API key.
-const TRANSLATE_API_URL = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
-  ? 'http://localhost:8787/translate'
-  : 'https://vettranslate-api.kotsergeyiber.workers.dev/translate';
-
 async function translate(text, targetLang){
-  const response = await fetch(TRANSLATE_API_URL, {
+  const response = await fetch(API_BASE + '/translate', {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ text, target: langInfo(targetLang).name })
@@ -1183,11 +1359,7 @@ document.getElementById('addCardBtn').onclick = async ()=>{
   const input = document.getElementById('newCardText');
   const text = input.value.trim();
   if(!text) return;
-  if(!cards[activeTab]) cards[activeTab] = [];
-  cards[activeTab].push({ text, favorite: false });
-  await saveCards();
-  input.value = '';
-  renderPhrases();
+  if(await editCards({ type: 'add', cat: activeTab, text })) input.value = '';
 };
 
 document.getElementById('newCardText').addEventListener('keydown', (e)=>{

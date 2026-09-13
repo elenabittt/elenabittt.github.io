@@ -18,5 +18,7 @@ Veterinary-clinic translator (UI in Russian) built by Elena. Reply to the user i
 
 ## Notes
 
-- User data (cards, favorites, extra languages) is stored in each browser's `localStorage`; changing `DEFAULT_CARDS` only affects browsers that haven't saved cards yet (plus new categories, via `migrateCards`).
+- Phrase cards (with favorites) are shared: stored in the Worker's `CardStore` Durable Object (`GET/POST /cards`). Viewing is public; edits need the `EDIT_PASSWORD` secret (asked once per device, kept in `localStorage`; 10 wrong tries → 15 min lockout). `DEFAULT_CARDS` in `index.html` only seed the store on the very first edit — to change cards that already exist, edit them on the site (or via `POST /cards`), not in `DEFAULT_CARDS`.
+- Old versions kept cards only in each browser (`localStorage` key `vet-translate-cards`); the site offers to merge those into the server once and keeps a `-backup` copy. Extra languages and mic language stay per-device.
+- GitHub Pages caches `index.html` for up to 10 minutes, so code changes can take that long to show on reload.
 - Model is set by `GEMINI_MODEL` in `worker/wrangler.toml` (`gemini-flash-lite-latest` alias), with `GEMINI_FALLBACK_MODELS` tried on 429/5xx. Free-tier models get overloaded; pinned versions get retired (404), so prefer the `-latest` aliases. Switching to Claude later means changing only the Worker.

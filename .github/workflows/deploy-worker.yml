@@ -21,5 +21,7 @@ jobs:
           workingDirectory: worker
           secrets: |
             GEMINI_API_KEY
+            EDIT_PASSWORD
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          EDIT_PASSWORD: ${{ secrets.EDIT_PASSWORD }}

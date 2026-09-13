@@ -11,5 +11,14 @@ GEMINI_MODEL = "gemini-flash-lite-latest"
 GEMINI_FALLBACK_MODELS = "gemini-3.1-flash-lite,gemini-flash-latest"
 ALLOWED_ORIGINS = "https://elenabittt.github.io"
 
-# Secret (set once, never committed):
-#   npx wrangler secret put GEMINI_API_KEY
+# Secrets (GitHub repo secrets, uploaded by .github/workflows/deploy-worker.yml):
+#   GEMINI_API_KEY, EDIT_PASSWORD
+
+# Shared phrase cards
+[[durable_objects.bindings]]
+name = "CARDS"
+class_name = "CardStore"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["CardStore"]
