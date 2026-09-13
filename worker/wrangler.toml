@@ -1,0 +1,13 @@
+name = "vettranslate-api"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+
+[vars]
+# Flash-Lite: ~0.6s and reliable on the free tier; full Flash was ~4s and often 503 (Sep 2026)
+GEMINI_MODEL = "gemini-flash-lite-latest"
+# Tried in order when the main model is overloaded (503) or rate limited (429)
+GEMINI_FALLBACK_MODELS = "gemini-3.1-flash-lite,gemini-flash-latest"
+ALLOWED_ORIGINS = "https://elenabittt.github.io"
+
+# Secret (set once, never committed):
+#   npx wrangler secret put GEMINI_API_KEY

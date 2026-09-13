@@ -1,0 +1,25 @@
+name: Deploy translation Worker
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'worker/**'
+      - '.github/workflows/deploy-worker.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: cloudflare/wrangler-action@v4
+        with:
+          # Secret names are spelled "CLOUDFARE" in the repo settings
+          apiToken: ${{ secrets.CLOUDFARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFARE_ACCOUNT_ID }}
+          workingDirectory: worker
+          secrets: |
+            GEMINI_API_KEY
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
