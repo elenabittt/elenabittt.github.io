@@ -153,6 +153,37 @@ function normalizeCards(input) {
   return out;
 }
 
+function cardTitle(text) {
+  return text.split('\n')[0].trim().toLowerCase();
+}
+
+// Drops copies of a card: the same text anywhere, or the same title (first line) twice
+// in one category — e.g. an edited card and its unedited original from an old browser.
+// The first copy wins and keeps the favorite mark of any copy it replaces.
+function removeDuplicates(cards) {
+  const byText = new Map();
+  const out = {};
+  let removed = 0;
+  for (const [cat, list] of Object.entries(cards)) {
+    const byTitle = new Map();
+    const kept = [];
+    for (const card of list) {
+      const original = byText.get(card.text) || byTitle.get(cardTitle(card.text));
+      if (original) {
+        original.favorite ||= card.favorite;
+        removed++;
+        continue;
+      }
+      const copy = { ...card };
+      byText.set(copy.text, copy);
+      byTitle.set(cardTitle(copy.text), copy);
+      kept.push(copy);
+    }
+    if (kept.length || !list.length) out[cat] = kept;
+  }
+  return { cards: out, removed };
+}
+
 function findCard(cards, id) {
   for (const list of Object.values(cards)) {
     const card = list.find(c => c.id === id);
@@ -165,17 +196,13 @@ function findCard(cards, id) {
 function applyToCards(cards, op) {
   if (op?.type === 'import') {
     const incoming = normalizeCards(op.cards);
-    if (!cards) return incoming;
+    if (!cards) return removeDuplicates(incoming).cards;
+    // Existing cards go first, so they win over older copies uploaded from another browser.
     const merged = structuredClone(cards);
     for (const [cat, list] of Object.entries(incoming)) {
-      merged[cat] ||= [];
-      for (const card of list) {
-        const existing = merged[cat].find(c => c.text === card.text);
-        if (existing) existing.favorite ||= card.favorite;
-        else merged[cat].push({ ...card, id: crypto.randomUUID() });
-      }
+      (merged[cat] ||= []).push(...list.map(card => ({ ...card, id: crypto.randomUUID() })));
     }
-    return merged;
+    return removeDuplicates(merged).cards;
   }
 
   if (!cards) return null;
@@ -183,7 +210,10 @@ function applyToCards(cards, op) {
   switch (op?.type) {
     case 'add': {
       const cat = cleanCategory(op.cat);
-      (next[cat] ||= []).push({ id: crypto.randomUUID(), text: cleanText(op.text), favorite: false });
+      const text = cleanText(op.text);
+      const list = (next[cat] ||= []);
+      // A repeated add of the same card (double tap, retried request) changes nothing.
+      if (!list.some(c => c.text === text)) list.push({ id: crypto.randomUUID(), text, favorite: false });
       return next;
     }
     case 'update':
@@ -205,6 +235,26 @@ function applyToCards(cards, op) {
 // Single shared store for all cards. Durable Object calls run one at a time,
 // so each edit reads and writes the latest state without races.
 export class CardStore extends DurableObject {
+  constructor(ctx, env) {
+    super(ctx, env);
+    ctx.blockConcurrencyWhile(() => this.removeDuplicatesOnce());
+  }
+
+  // One-time cleanup of duplicates created by merging old browser copies (Sep 2026).
+  // The state before cleanup is kept under 'backupBeforeDedupeV1'.
+  async removeDuplicatesOnce() {
+    if (await this.ctx.storage.get('dedupedV1')) return;
+    const state = await this.ctx.storage.get('state');
+    if (state?.cards) {
+      const { cards, removed } = removeDuplicates(state.cards);
+      if (removed) {
+        await this.ctx.storage.put('backupBeforeDedupeV1', state);
+        await this.ctx.storage.put('state', { version: state.version + 1, cards });
+      }
+    }
+    await this.ctx.storage.put('dedupedV1', true);
+  }
+
   async getState() {
     return (await this.ctx.storage.get('state')) || { version: 0, cards: null };
   }

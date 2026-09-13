@@ -516,6 +516,46 @@ textarea:focus{outline:none;border-color:var(--pine);}
 }
 @keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
 
+.cards-section{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+.cards-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+
+/* Tablet: one wider column; tabs wrap instead of scrolling sideways */
+@media (min-width:700px){
+  .app{max-width:760px;padding:28px 24px 48px;}
+  .tabs{flex-wrap:wrap;overflow:visible;}
+}
+/* Desktop: translator on the left (stays in view), cards on the right */
+@media (min-width:1000px){
+  .app{
+    max-width:1240px;
+    display:grid;
+    grid-template-columns:minmax(360px,420px) minmax(0,1fr);
+    align-content:start;
+    align-items:start;
+    column-gap:32px;
+    padding:32px 40px 56px;
+  }
+  .header{grid-column:1 / -1;}
+  .translate-panel{grid-column:1;position:sticky;top:24px;}
+  .cards-section{grid-column:2;}
+  #inputText{min-height:130px;}
+}
+/* Wide desktop: cards in two columns; an open card takes the full width */
+@media (min-width:1200px){
+  .phrase-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;}
+  .phrase.open,
+  .phrase-list > .hint{grid-column:1 / -1;}
+}
+
 [hidden]{display:none !important;}
 .legacy-banner{
   background:rgba(255,213,64,0.14);
@@ -586,7 +626,7 @@ textarea:focus{outline:none;border-color:var(--pine);}
   </div>
 
   <!-- LIVE TRANSLATION -->
-  <div class="card">
+  <div class="card translate-panel">
     <span class="field-label">Что сказать / перевод</span>
     <textarea id="inputText" placeholder="Пишите на любом языке — русском, немецком, английском, испанском…"></textarea>
 
@@ -616,12 +656,12 @@ textarea:focus{outline:none;border-color:var(--pine);}
   </div>
 
   <!-- CARDS -->
-  <div style="display:flex;flex-direction:column;gap:10px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+  <section class="cards-section">
+    <div class="cards-head">
       <div class="section-title">Готовые карточки</div>
       <button type="button" id="exportCardsBtn" class="export-btn">Экспорт карточек</button>
     </div>
-    <div class="tabs" id="tabs"></div></div>
+    <div class="tabs" id="tabs"></div>
     <div class="legacy-banner" id="legacyBanner" hidden>
       <div id="legacyText"></div>
       <div class="edit-actions">
@@ -637,7 +677,7 @@ textarea:focus{outline:none;border-color:var(--pine);}
       <button id="addCardBtn">+ Карточка</button>
     </div>
     <div class="hint">Карточка переводится на язык, который выбран кнопкой на ней самой — язык можно менять для каждой карточки отдельно.</div>
-  </div>
+  </section>
 
 </div>
 
@@ -913,8 +953,21 @@ async function postCardsOp(op, password){
   return { res, data: await res.json().catch(()=>({})) };
 }
 
+let editInProgress = false;
+
 // Sends one edit to the server and re-renders with the result. Returns true if saved.
-async function editCards(op, passwordMessage){
+// Taps made while an edit is still saving are ignored, so a double tap can't add a card twice.
+async function editCards(op){
+  if(editInProgress) return false;
+  editInProgress = true;
+  try{
+    return await sendEdit(op);
+  }finally{
+    editInProgress = false;
+  }
+}
+
+async function sendEdit(op, passwordMessage){
   const password = await getEditPassword(passwordMessage);
   if(password === null) return false;
   setSyncStatus('Сохраняем…');
@@ -928,7 +981,7 @@ async function editCards(op, passwordMessage){
     if(res.status === 401){
       storageRemove(PASSWORD_KEY);
       setSyncStatus('');
-      return editCards(op, 'Неверный пароль, попробуйте ещё раз.');
+      return sendEdit(op, 'Неверный пароль, попробуйте ещё раз.');
     }
     if(res.status === 429){
       setSyncStatus('Слишком много неверных попыток. Попробуйте через 15 минут.');
@@ -950,12 +1003,16 @@ async function editCards(op, passwordMessage){
 }
 
 function legacyCardsMissing(legacyCards){
+  const title = text => text.split('\n')[0].trim().toLowerCase();
+  const allCards = Object.values(cards).flat();
   let missing = 0;
   Object.keys(legacyCards).forEach(cat=>{
     (Array.isArray(legacyCards[cat]) ? legacyCards[cat] : []).forEach(item=>{
       const text = typeof item.text === 'string' ? item.text.trim() : '';
       if(!text) return;
-      const match = (cards[cat] || []).find(c => c.text === text);
+      // Same rule as the server merge: same text anywhere, or same title in the category, is not new.
+      const match = allCards.find(c => c.text === text)
+        || (cards[cat] || []).find(c => title(c.text) === title(text));
       if(!match || (item.favorite === true && !match.favorite)) missing++;
     });
   });
@@ -1363,7 +1420,7 @@ document.getElementById('addCardBtn').onclick = async ()=>{
 };
 
 document.getElementById('newCardText').addEventListener('keydown', (e)=>{
-  if(e.key === 'Enter') document.getElementById('addCardBtn').click();
+  if(e.key === 'Enter' && !e.isComposing) document.getElementById('addCardBtn').click();
 });
 
 (async function init(){
