@@ -989,21 +989,20 @@ function escapeHtml(str){
   return d.innerHTML;
 }
 
+// Translation goes through our Cloudflare Worker (worker/), which holds the API key.
+const TRANSLATE_API_URL = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+  ? 'http://localhost:8787/translate'
+  : 'https://vettranslate-api.kotsergeyiber.workers.dev/translate';
+
 async function translate(text, targetLang){
-  const targetName = langInfo(targetLang).name;
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
+  const response = await fetch(TRANSLATE_API_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: "claude-sonnet-4-6",
-      max_tokens: 1000,
-      system: `You are a translation engine for a veterinary clinic receptionist. Detect the input language automatically. Translate the given text accurately into ${targetName}, preserving veterinary and medical terminology precision. If the text has multiple lines, translate line by line and preserve the exact same line breaks and emoji in the output. Respond with ONLY the translated text — no quotes, no explanations, no language labels, nothing else.`,
-      messages: [{ role: "user", content: text }]
-    })
+    body: JSON.stringify({ text, target: langInfo(targetLang).name })
   });
   const data = await response.json();
-  const block = (data.content || []).find(b => b.type === 'text');
-  return block ? block.text.trim() : '';
+  if(!response.ok) throw new Error(data.error || ('HTTP ' + response.status));
+  return (data.text || '').trim();
 }
 
 let cachedVoices = [];
