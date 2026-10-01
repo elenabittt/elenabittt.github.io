@@ -1558,20 +1558,15 @@ document.getElementById('fridgeFindBtn').addEventListener('click', async ()=>{
   result.textContent = UI.loadingText[state.lang];
   result.classList.add('show');
   try{
-    const sample = (typeof claude !== 'undefined') ? await claude.use('sample') : null;
-    if(!sample){
-      result.textContent = UI.unavailableText[state.lang];
-      btn.disabled = false;
-      return;
-    }
-    const dietName = DIETS[state.diet].name[state.lang];
-    const langNames = {ru:'русском', en:'English', es:'español'};
-    const forbiddenLine = state.forbidden.length ? ('Не используй эти продукты: ' + state.forbidden.join(', ') + '. ') : '';
-    const prompt = 'Пользователь придерживается диеты "' + dietName + '". У него есть продукты: ' + ingredients + '. ' +
-      forbiddenLine + 'Предложи одно блюдо, которое можно приготовить в основном из этих продуктов и которое подходит под эту диету. ' +
-      'Ответь коротко: первая строка — название блюда, затем 3-5 шагов приготовления. Пиши на языке: ' + langNames[state.lang] + '.';
-    const res = await sample(prompt);
-    result.textContent = res.text;
+    // Made in claude.ai; on GitHub Pages the dish is suggested by the VetTranslate Worker (worker/, POST /recipe).
+    const res = await fetch('https://vettranslate-api.kotsergeyiber.workers.dev/recipe', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({diet: DIETS[state.diet].name[state.lang], ingredients, forbidden: state.forbidden, lang: state.lang})
+    });
+    const data = await res.json();
+    if(!res.ok || !data.text) throw new Error(data.error || res.status);
+    result.textContent = data.text;
   }catch(e){
     result.textContent = UI.unavailableText[state.lang];
   }

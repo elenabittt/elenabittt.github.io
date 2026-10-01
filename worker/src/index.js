@@ -3,6 +3,7 @@
 // and stores the shared phrase cards so every device sees the same ones.
 //
 // POST /translate  { text, target }                     ->  { text }
+// POST /recipe     { diet, ingredients, forbidden, lang } ->  { text }   (for the Улей page, /ulei/)
 // GET  /cards                                           ->  { version, cards | null }
 // POST /cards      { type, ... }  + X-Edit-Password     ->  { version, cards }
 //   type: 'import' { cards }  (merge; sets everything when the store is empty)
@@ -45,6 +46,7 @@ export default {
 
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors });
     if (url.pathname === '/translate' && request.method === 'POST') return handleTranslate(request, env, cors);
+    if (url.pathname === '/recipe' && request.method === 'POST') return handleRecipe(request, env, cors);
     if (url.pathname === '/cards') {
       const store = env.CARDS.get(env.CARDS.idFromName('main'));
       if (request.method === 'GET') return json(await store.getState(), 200, cors);
@@ -66,14 +68,44 @@ async function handleTranslate(request, env, cors) {
   if (!text || !target) return json({ error: 'text and target are required' }, 400, cors);
   if (text.length > MAX_TEXT_LENGTH) return json({ error: 'Text too long' }, 413, cors);
 
+  return generate(env, cors, systemPrompt(target), text, 0.2);
+}
+
+// Suggests one dish from what's in the fridge. The prompt is built here (not sent by the page)
+// so the endpoint can't be used as a general-purpose free model.
+async function handleRecipe(request, env, cors) {
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return json({ error: 'Invalid JSON' }, 400, cors);
+  }
+  const str = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
+  const ingredients = str(body.ingredients, 1000);
+  const diet = str(body.diet, 100);
+  const lang = { ru: 'русском', en: 'English', es: 'español' }[body.lang] || 'русском';
+  const forbidden = Array.isArray(body.forbidden)
+    ? body.forbidden.filter(f => typeof f === 'string').map(f => f.trim().slice(0, 100)).filter(Boolean).slice(0, 50)
+    : [];
+  if (!ingredients) return json({ error: 'ingredients are required' }, 400, cors);
+
+  const prompt = 'Пользователь придерживается диеты "' + diet + '". У него есть продукты: ' + ingredients + '. ' +
+    (forbidden.length ? 'Не используй эти продукты: ' + forbidden.join(', ') + '. ' : '') +
+    'Предложи одно блюдо, которое можно приготовить в основном из этих продуктов и которое подходит под эту диету. ' +
+    'Ответь коротко: первая строка — название блюда, затем 3-5 шагов приготовления. ' +
+    'Пиши простым текстом, без Markdown и без эмодзи. Пиши на языке: ' + lang + '.';
+  return generate(env, cors, 'You are a helpful home-cooking assistant.', prompt, 0.7);
+}
+
+async function generate(env, cors, system, text, temperature) {
   // Free-tier models are often briefly overloaded (503) or rate limited (429),
   // so fall through to the next model on transient errors.
   const models = [env.GEMINI_MODEL || 'gemini-flash-latest',
     ...(env.GEMINI_FALLBACK_MODELS || '').split(',').map(s => s.trim()).filter(Boolean)];
   const requestBody = JSON.stringify({
-    systemInstruction: { parts: [{ text: systemPrompt(target) }] },
+    systemInstruction: { parts: [{ text: system }] },
     contents: [{ role: 'user', parts: [{ text }] }],
-    generationConfig: { temperature: 0.2 },
+    generationConfig: { temperature },
   });
 
   let lastStatus = 502;
@@ -89,8 +121,8 @@ async function handleTranslate(request, env, cors) {
     const data = await res.json().catch(() => ({}));
     if (res.ok) {
       const parts = data.candidates?.[0]?.content?.parts || [];
-      const translated = parts.filter(p => p.text && !p.thought).map(p => p.text).join('').trim();
-      return json({ text: translated }, 200, cors);
+      const out = parts.filter(p => p.text && !p.thought).map(p => p.text).join('').trim();
+      return json({ text: out }, 200, cors);
     }
     console.error('Gemini error', model, res.status, JSON.stringify(data));
     lastStatus = res.status;
