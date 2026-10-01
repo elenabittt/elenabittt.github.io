@@ -1,0 +1,1607 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Улей — план здорового питания</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FFFFFF; --cream:#FFFCF6;
+    --honey:#F7C948; --honey-deep:#DFA400; --honey-pale:#FCEEC2;
+    --caution:#C97A1B; --caution-pale:#FBE6CC;
+    --forbid:#A6432F; --forbid-pale:#F3DAD4; --forbid-transp:rgba(166,67,47,.08);
+    --symptom:#C2650F; --symptom-pale:#F7E3CC; --symptom-transp:rgba(194,101,15,.08); --symptom-border:rgba(194,101,15,.35);
+    --buy:#3F7D33; --buy-pale:#DCEBD3; --buy-transp:rgba(63,125,51,.08); --buy-border:rgba(63,125,51,.35);
+    --ink:#2A2118; --ink-soft:#6E6053; --line:#ECE2CC;
+    color-scheme: light;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-padding-top:env(safe-area-inset-top,0px);}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Work Sans', sans-serif;
+    padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);-webkit-font-smoothing:antialiased;}
+  h1,h2,h3{font-family:'Fraunces', serif; margin:0; font-weight:500;}
+  .hex{clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);}
+
+  header.site-header{display:flex; align-items:center; justify-content:space-between; gap:16px;
+    max-width:960px; margin:0 auto; padding:28px 24px 20px; flex-wrap:wrap;}
+  .brand{display:flex; align-items:center; gap:14px;}
+  .logo{width:46px; height:40px; flex-shrink:0;}
+  .brand h1{font-size:1.5rem; letter-spacing:.2px;}
+  .brand p{margin:2px 0 0; font-size:.88rem; color:var(--ink-soft);}
+  .lang-switch{display:flex; gap:2px; border-bottom:1px solid var(--line);}
+  .lang-switch button{background:none; border:none; cursor:pointer; font-family:'Work Sans', sans-serif; font-size:.85rem; font-weight:500;
+    color:var(--ink-soft); padding:8px 10px; border-bottom:2px solid transparent; margin-bottom:-1px; transition:color .15s ease, border-color .15s ease;}
+  .lang-switch button:hover{color:var(--ink);}
+  .lang-switch button[aria-pressed="true"]{color:var(--ink); border-bottom-color:var(--honey-deep);}
+
+  .hex-divider{max-width:960px; margin:6px auto 8px; padding:0 24px; display:flex; align-items:center; gap:10px;}
+  .hex-divider .line{height:1px; flex:1; background:var(--line);}
+  .hex-divider .hex{width:9px; height:9px; background:var(--honey);}
+
+  .tools-row{max-width:960px; margin:0 auto; padding:0 24px 8px; display:flex; gap:10px; flex-wrap:wrap;}
+  .tool-btn{display:flex; align-items:center; gap:8px; padding:10px 14px; border-radius:2px; cursor:pointer;
+    font-family:'Work Sans', sans-serif; font-size:.85rem; font-weight:500; background:var(--cream); border:1px solid var(--line); color:var(--ink);
+    transition:border-color .15s ease;}
+  .tool-btn:hover{border-color:var(--honey-deep);}
+  .tool-btn .dot{width:8px; height:8px; background:var(--honey); flex-shrink:0; clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);}
+  .tool-btn.danger{background:var(--forbid-transp); border-color:rgba(166,67,47,.35); color:var(--forbid);}
+  .tool-btn.danger:hover{border-color:var(--forbid);}
+  .tool-btn.danger .dot{background:var(--forbid); clip-path:none; border-radius:50%;}
+  .tool-btn.symptom{background:var(--symptom-transp); border-color:var(--symptom-border); color:var(--symptom);}
+  .tool-btn.symptom:hover{border-color:var(--symptom);}
+  .tool-btn.symptom .dot{background:var(--symptom); clip-path:none; border-radius:50%;}
+  .tool-btn .dot.heart, .tool-btn .dot.pencil{width:auto; height:auto; background:none; clip-path:none; font-size:.9rem; color:var(--honey-deep); line-height:1;}
+
+  .profile-row{max-width:960px; margin:0 auto; padding:0 24px 10px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+  .profile-row span{font-size:.8rem; color:var(--ink-soft);}
+  .profile-row select{font-family:'Work Sans', sans-serif; font-size:.85rem; color:var(--ink); border:1px solid var(--line);
+    border-radius:2px; padding:5px 8px; background:var(--cream);}
+  .profile-row button{background:var(--honey-pale); border:1px solid var(--honey-deep); color:var(--ink); border-radius:2px;
+    width:26px; height:26px; cursor:pointer; font-size:.9rem; line-height:1;}
+  #profileAddForm{display:inline-flex; align-items:center; gap:6px;}
+  #newProfileInput{font-family:'Work Sans', sans-serif; font-size:.85rem; color:var(--ink); border:1px solid var(--line);
+    border-radius:2px; padding:5px 8px; width:140px;}
+  .calories-toggle{background:var(--cream); border:1px solid var(--line); color:var(--ink-soft); border-radius:2px;
+    padding:6px 10px; cursor:pointer; font-size:.8rem; width:auto; height:auto; margin-left:8px;}
+  .calories-toggle.active{background:var(--honey-pale); border-color:var(--honey-deep); color:var(--ink);}
+  .buy-btn{display:flex; align-items:center; gap:8px; padding:10px 14px; border-radius:2px; cursor:pointer;
+    font-family:'Work Sans', sans-serif; font-size:.85rem; font-weight:500; background:var(--buy-transp);
+    border:1px solid var(--buy-border); color:var(--buy); width:auto; height:auto; margin-left:auto;}
+  .buy-btn:hover{border-color:var(--buy);}
+  .buy-btn .dot{width:8px; height:8px; background:var(--buy); border-radius:50%; flex-shrink:0;}
+  .buy-item{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 0; border-bottom:1px solid var(--line);}
+  .chip.buy-chip{background:var(--buy-transp); border-color:var(--buy-border); color:var(--buy);}
+  .find-btn.buy-add{background:var(--buy-pale); border-color:var(--buy); color:var(--ink);}
+  .buy-add-btn{background:var(--buy-pale); border:1px solid var(--buy); color:var(--ink); border-radius:2px; padding:8px 14px;
+    cursor:pointer; font-family:'Work Sans', sans-serif; font-size:.85rem; font-weight:500;}
+  .storage-warning{max-width:960px; margin:0 auto 12px; padding:10px 24px; font-size:.82rem; color:var(--forbid);
+    background:var(--forbid-transp); border-top:1px solid rgba(166,67,47,.35); border-bottom:1px solid rgba(166,67,47,.35);}
+
+  .update-btn{padding:5px 10px; height:auto; width:auto; border:1px solid var(--line); background:var(--cream); border-radius:2px;
+    cursor:pointer; font-size:.75rem; font-weight:500; color:var(--ink-soft); font-family:'Work Sans', sans-serif;}
+  .update-btn:hover{border-color:var(--honey-deep); color:var(--ink);}
+  .heart-btn{width:24px; height:24px; border:1px solid var(--line); background:var(--cream); border-radius:2px; cursor:pointer;
+    font-size:.85rem; color:var(--ink-soft); display:flex; align-items:center; justify-content:center; padding:0;}
+  .heart-btn.active{background:var(--forbid-transp); border-color:var(--forbid); color:var(--forbid);}
+
+  .fav-item, .custom-item{display:flex; align-items:flex-start; justify-content:space-between; gap:10px; padding:10px 0;
+    border-bottom:1px solid var(--line);}
+  .fav-item .meta, .custom-item .meta{font-size:.72rem; color:var(--ink-soft); margin-top:2px;}
+  .fav-item strong, .custom-item strong{font-family:'Fraunces', serif; font-weight:500; font-size:.95rem;}
+  .item-remove{background:none; border:none; cursor:pointer; color:var(--ink-soft); font-size:1rem; padding:2px 4px; flex-shrink:0;}
+  .item-remove:hover{color:var(--forbid);}
+  .find-btn.symptom-btn{background:var(--symptom-pale); border-color:var(--symptom); color:var(--ink);}
+  .symptom-item{display:flex; align-items:flex-start; justify-content:space-between; gap:10px; padding:10px 0; border-bottom:1px solid var(--line);}
+  .symptom-item strong{font-family:'Fraunces', serif; font-weight:500; font-size:.95rem; color:var(--symptom);}
+  .symptom-item .meta{font-size:.72rem; color:var(--ink-soft); margin-top:2px;}
+  #customNameInput, #symptomFoodInput{width:100%; font-family:'Work Sans', sans-serif; font-size:.9rem; border:1px solid var(--line); border-radius:2px; padding:8px 10px; color:var(--ink);}
+
+  main{max-width:960px; margin:0 auto; padding:8px 24px 40px;}
+
+  section.diet-select h2{font-size:1.05rem; font-weight:500; margin-bottom:14px;}
+  .diet-row{display:flex; flex-wrap:wrap; gap:10px;}
+  .diet-btn{display:flex; align-items:flex-start; gap:10px; background:var(--cream); border:1px solid var(--line); border-radius:2px;
+    padding:12px 14px; cursor:pointer; text-align:left; min-width:200px; flex:1 1 220px; transition:border-color .15s ease, background .15s ease;}
+  .diet-btn:hover{border-color:var(--honey-deep);}
+  .diet-btn[aria-pressed="true"]{background:var(--honey-pale); border-color:var(--honey-deep);}
+  .diet-icon{width:34px; height:34px; flex-shrink:0;}
+  .diet-btn strong{display:block; font-family:'Fraunces', serif; font-weight:500; font-size:1rem;}
+  .diet-btn span.d{display:block; font-size:.8rem; color:var(--ink-soft); margin-top:2px; line-height:1.35;}
+
+  section.week-plan{margin-top:34px;}
+  .day-tabs{display:flex; gap:4px; overflow-x:auto; border-bottom:1px solid var(--line); -ms-overflow-style:none; scrollbar-width:none;}
+  .day-tabs::-webkit-scrollbar{display:none;}
+  .day-tabs button{background:none; border:none; cursor:pointer; flex-shrink:0; font-family:'Work Sans', sans-serif; font-size:.88rem; font-weight:500;
+    color:var(--ink-soft); padding:10px 14px; border-bottom:2px solid transparent; margin-bottom:-1px; transition:color .15s ease, border-color .15s ease;}
+  .day-tabs button:hover{color:var(--ink);}
+  .day-tabs button[aria-pressed="true"]{color:var(--ink); border-bottom-color:var(--honey-deep); font-weight:600;}
+
+  .meals{display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; margin-top:20px;}
+  @media (max-width:640px){ .meals{grid-template-columns:1fr;} }
+
+  .meal-card{border:1px solid var(--line); border-radius:2px; padding:16px; background:var(--bg); transition:background .15s ease, border-color .15s ease;}
+  .meal-card.is-caution{background:var(--caution-pale); border-color:var(--caution);}
+  .meal-card.is-forbidden{background:var(--forbid-pale); border-color:var(--forbid);}
+  .meal-head{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px; flex-wrap:wrap;}
+  .meal-head h3{display:flex; align-items:center; gap:8px; font-size:.82rem; font-weight:600; color:var(--honey-deep); letter-spacing:.2px;}
+  .meal-card.is-caution .meal-head h3{color:var(--caution);}
+  .meal-card.is-forbidden .meal-head h3{color:var(--forbid);}
+  .meal-head h3::before{content:""; width:9px; height:9px; background:var(--honey); flex-shrink:0;
+    clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);}
+  .meal-card.is-caution .meal-head h3::before{background:var(--caution);}
+  .meal-card.is-forbidden .meal-head h3::before{background:var(--forbid);}
+  .meal-actions{display:flex; gap:5px;}
+  .icon-btn{width:24px; height:24px; border:1px solid var(--line); background:var(--cream); border-radius:2px; display:flex; align-items:center;
+    justify-content:center; cursor:pointer; font-size:.72rem; color:var(--ink-soft); padding:0; line-height:1; transition:border-color .15s ease, color .15s ease;}
+  .icon-btn:hover{border-color:var(--ink-soft); color:var(--ink);}
+  .icon-hex{width:22px; height:22px; border:none; background:var(--line); color:#fff; display:flex; align-items:center; justify-content:center;
+    cursor:pointer; font-size:.7rem; font-weight:600; padding:0; line-height:1;
+    clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%); transition:background .15s ease;}
+  .icon-hex[data-action="caution"]:hover{background:var(--caution);}
+  .icon-hex[data-action="forbid"]:hover{background:var(--forbid);}
+  .icon-hex.active[data-action="caution"]{background:var(--caution);}
+  .icon-hex.active[data-action="forbid"]{background:var(--forbid);}
+  .meal-text{margin:0 0 6px; font-size:1rem; line-height:1.5; color:var(--ink);}
+  .constructor-banner{font-size:.82rem; color:var(--buy); background:var(--buy-transp); border:1px solid var(--buy-border);
+    border-radius:2px; padding:10px 14px; margin:16px 0 0; max-width:100%;}
+  .meal-card.is-forbidden .meal-text{text-decoration:line-through; text-decoration-color:var(--forbid); color:var(--ink-soft);}
+  .meal-note{margin:0 0 12px; font-size:.72rem; color:var(--caution); font-style:italic;}
+  .meal-card.is-forbidden .meal-note{color:var(--forbid);}
+  .meal-how{margin:0 0 12px; font-size:.82rem; color:var(--ink-soft); line-height:1.5;}
+  .meal-how strong{color:var(--honey-deep); font-weight:600;}
+  .meal-cal{margin:0 0 8px; font-size:.78rem; color:var(--honey-deep); font-weight:600;}
+  .meal-edit-input{width:100%; font-family:'Work Sans', sans-serif; font-size:1rem; color:var(--ink); border:1px solid var(--honey-deep);
+    border-radius:2px; padding:6px 8px; margin-bottom:12px;}
+  .meal-edit-box{margin-bottom:12px;}
+  .meal-edit-select{width:100%; font-family:'Work Sans', sans-serif; font-size:.82rem; color:var(--ink-soft); border:1px solid var(--line);
+    border-radius:2px; padding:5px 8px; background:var(--cream); margin-bottom:6px;}
+  .meal-edit-btns{display:flex; gap:6px;}
+  .edit-save, .edit-cancel{width:28px; height:28px; border-radius:2px; cursor:pointer; font-size:.85rem; padding:0; line-height:1;}
+  .edit-save{background:var(--honey-pale); border:1px solid var(--honey-deep); color:var(--ink);}
+  .edit-cancel{background:var(--forbid-transp); border:1px solid rgba(166,67,47,.35); color:var(--forbid);}
+
+  .meal-time{border-top:1px solid var(--line); padding-top:10px;}
+  .meal-time-row{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+  .meal-time-row label{font-size:.72rem; color:var(--ink-soft);}
+  .meal-time input[type="time"]{font-family:'Work Sans', sans-serif; font-size:.85rem; color:var(--ink); border:1px solid var(--line);
+    border-radius:2px; padding:4px 6px; background:var(--cream);}
+  .bell-btn{width:24px; height:24px; border:1px solid var(--line); background:var(--cream); border-radius:2px; cursor:pointer; font-size:.8rem;
+    color:var(--ink-soft); display:flex; align-items:center; justify-content:center; padding:0;}
+  .bell-btn.active{background:var(--honey-pale); border-color:var(--honey-deep); color:var(--honey-deep);}
+  .meal-time-hint{font-size:.68rem; color:var(--ink-soft); margin:6px 0 0;}
+
+  .modal-overlay{position:fixed; inset:0; background:rgba(42,33,24,.4); display:none; align-items:flex-start; justify-content:center;
+    padding:60px 20px; z-index:50; overflow-y:auto;}
+  .modal-overlay.open{display:flex;}
+  .modal-panel{background:var(--bg); border:1px solid var(--line); border-radius:2px; max-width:520px; width:100%; padding:24px;
+    box-shadow:0 8px 30px rgba(42,33,24,.15);}
+  .modal-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;}
+  .modal-head h2{font-size:1.15rem;}
+  .modal-close{background:none; border:none; cursor:pointer; font-size:1.2rem; color:var(--ink-soft); line-height:1; padding:4px;}
+  .modal-close:hover{color:var(--ink);}
+  .modal-panel p.intro{font-size:.85rem; color:var(--ink-soft); margin:0 0 14px; line-height:1.5;}
+
+  .article{border-bottom:1px solid var(--line);}
+  .article summary{display:flex; align-items:center; gap:10px; cursor:pointer; list-style:none; padding:14px 0;
+    font-family:'Fraunces', serif; font-size:1rem; font-weight:500; color:var(--ink);}
+  .article summary::-webkit-details-marker{display:none;}
+  .article summary::before{content:""; width:10px; height:10px; background:var(--honey); flex-shrink:0;
+    clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%); transition:transform .15s ease;}
+  .article[open] summary::before{transform:rotate(90deg);}
+  .article p.body{margin:0 0 18px; font-size:.9rem; line-height:1.6; color:var(--ink-soft);}
+
+  .chip-row{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px;}
+  .chip{display:flex; align-items:center; gap:6px; background:var(--forbid-transp); border:1px solid rgba(166,67,47,.35);
+    color:var(--forbid); padding:6px 10px; border-radius:2px; font-size:.82rem; cursor:pointer;}
+  .chip:hover{border-color:var(--forbid);}
+  .add-row{display:flex; gap:8px;}
+  .add-row input[type="text"]{flex:1; font-family:'Work Sans', sans-serif; font-size:.9rem; border:1px solid var(--line); border-radius:2px;
+    padding:8px 10px; color:var(--ink);}
+  .add-row button{background:var(--honey-pale); border:1px solid var(--honey-deep); color:var(--ink); border-radius:2px; padding:8px 14px;
+    cursor:pointer; font-family:'Work Sans', sans-serif; font-size:.85rem; font-weight:500;}
+  .modal-note{font-size:.75rem; color:var(--ink-soft); margin-top:14px; line-height:1.5;}
+  .empty-note{font-size:.85rem; color:var(--ink-soft); margin-bottom:14px;}
+
+  .fridge-textarea{width:100%; min-height:70px; font-family:'Work Sans', sans-serif; font-size:.9rem; border:1px solid var(--line);
+    border-radius:2px; padding:10px; color:var(--ink); resize:vertical; margin-bottom:10px;}
+  .find-btn{background:var(--honey-pale); border:1px solid var(--honey-deep); color:var(--ink); border-radius:2px; padding:9px 16px;
+    cursor:pointer; font-family:'Work Sans', sans-serif; font-size:.85rem; font-weight:500;}
+  .find-btn:disabled{opacity:.5; cursor:default;}
+  .fridge-result{margin-top:16px; padding:14px; border:1px solid var(--line); background:var(--cream); border-radius:2px;
+    font-size:.9rem; line-height:1.6; white-space:pre-wrap; display:none;}
+  .fridge-result.show{display:block;}
+
+  footer{max-width:960px; margin:0 auto; padding:20px 24px 40px;}
+  footer p{font-size:.8rem; color:var(--ink-soft); line-height:1.5; max-width:60ch;}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="brand">
+    <svg class="logo" viewBox="0 0 60 52" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <polygon points="15,2 30,2 37,14 30,26 15,26 8,14" fill="none" stroke="#F7C948" stroke-width="2.2"/>
+      <polygon points="30,2 45,2 52,14 45,26 30,26 23,14" fill="none" stroke="#DFA400" stroke-width="2.2"/>
+      <polygon points="22,26 37,26 44,38 37,50 22,50 15,38" fill="#F7C948" stroke="#DFA400" stroke-width="2.2"/>
+    </svg>
+    <div><h1 id="t-title">Улей</h1><p id="t-subtitle">План здорового питания на неделю</p></div>
+  </div>
+  <div class="lang-switch" role="group" aria-label="Язык">
+    <button data-lang="ru" aria-pressed="true">RU</button>
+    <button data-lang="en" aria-pressed="false">EN</button>
+    <button data-lang="es" aria-pressed="false">ES</button>
+  </div>
+</header>
+
+<div class="profile-row">
+  <span id="t-profileLabel">Профиль:</span>
+  <select id="profileSelect"></select>
+  <button type="button" id="profileAddBtn">+</button>
+  <span id="profileAddForm" style="display:none;">
+    <input type="text" id="newProfileInput" placeholder="">
+    <button type="button" id="profileConfirmBtn">✓</button>
+    <button type="button" id="profileCancelBtn">×</button>
+  </span>
+  <button type="button" id="caloriesToggleBtn" class="calories-toggle">🔥 <span id="t-caloriesToggle">Калории</span></button>
+  <button type="button" id="btnBuy" class="buy-btn"><span class="dot"></span><span id="t-buyBtn">Купить</span></button>
+</div>
+
+<div class="hex-divider"><span class="line"></span><span class="hex"></span><span class="line"></span></div>
+
+<div id="storageWarning" class="storage-warning" style="display:none;"></div>
+
+<div class="tools-row">
+  <button class="tool-btn danger" id="btnForbidden" type="button"><span class="dot"></span><span id="t-forbiddenBtn">Продукты, которые нельзя</span></button>
+  <button class="tool-btn" id="btnFridge" type="button"><span class="dot"></span><span id="t-fridgeBtn">Из того, что есть</span></button>
+  <button class="tool-btn" id="btnCustom" type="button"><span class="dot pencil">✎</span><span id="t-customBtn">Мои блюда</span></button>
+  <button class="tool-btn" id="btnFavorites" type="button"><span class="dot heart">♥</span><span id="t-favoritesBtn">Избранное</span></button>
+  <button class="tool-btn" id="btnArticles" type="button"><span class="dot"></span><span id="t-articlesBtn">Статьи</span></button>
+  <button class="tool-btn symptom" id="btnSymptoms" type="button"><span class="dot"></span><span id="t-symptomsBtn">Симптомы</span></button>
+</div>
+
+<main>
+  <section class="diet-select">
+    <h2 id="t-dietTitle">Выберите тип питания</h2>
+    <div class="diet-row" id="dietRow"></div>
+  </section>
+
+  <section class="week-plan">
+    <div class="day-tabs" id="dayTabs"></div>
+    <p class="constructor-banner" id="constructorBanner" style="display:none;"></p>
+    <div class="meals" id="mealsContainer"></div>
+  </section>
+</main>
+
+<footer>
+  <p id="t-footer">Это ориентировочный план. При особых потребностях в питании проконсультируйтесь со специалистом.</p>
+</footer>
+
+<div class="modal-overlay" id="modalArticles">
+  <div class="modal-panel">
+    <div class="modal-head"><h2 id="t-articlesTitle2">Статьи</h2><button class="modal-close" data-close="modalArticles">×</button></div>
+    <p class="intro" id="t-articlesSubtitle">О витаминах, добавках и разных диетах</p>
+    <div id="articlesList"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalForbidden">
+  <div class="modal-panel">
+    <div class="modal-head"><h2 id="t-forbiddenTitle">Продукты, которые нельзя</h2><button class="modal-close" data-close="modalForbidden">×</button></div>
+    <div class="chip-row" id="forbiddenChips"></div>
+    <p class="empty-note" id="forbiddenEmpty" style="display:none;"></p>
+    <div class="add-row">
+      <input type="text" id="forbiddenInput" placeholder="">
+      <button type="button" id="forbiddenAddBtn"></button>
+    </div>
+    <p class="modal-note" id="t-forbiddenNote"></p>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalFridge">
+  <div class="modal-panel">
+    <div class="modal-head"><h2 id="t-fridgeTitle">Из того, что есть</h2><button class="modal-close" data-close="modalFridge">×</button></div>
+    <p class="intro" id="t-fridgeIntro"></p>
+    <textarea class="fridge-textarea" id="fridgeInput" placeholder=""></textarea>
+    <button class="find-btn" id="fridgeFindBtn" type="button"></button>
+    <div class="fridge-result" id="fridgeResult"></div>
+    <p class="modal-note" id="t-fridgeConsent"></p>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalFavorites">
+  <div class="modal-panel">
+    <div class="modal-head"><h2 id="t-favoritesTitle2">Избранное</h2><button class="modal-close" data-close="modalFavorites">×</button></div>
+    <p class="empty-note" id="favoritesEmpty" style="display:none;"></p>
+    <div id="favoritesList"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalCustom">
+  <div class="modal-panel">
+    <div class="modal-head"><h2 id="t-customTitle2">Мои блюда</h2><button class="modal-close" data-close="modalCustom">×</button></div>
+    <p class="intro" id="t-customIntro"></p>
+    <div class="add-row" style="margin-bottom:8px;">
+      <input type="text" id="customNameInput" placeholder="">
+    </div>
+    <textarea class="fridge-textarea" id="customHowInput" placeholder=""></textarea>
+    <button class="find-btn" id="customAddBtn" type="button"></button>
+    <p class="empty-note" id="customEmpty" style="display:none;"></p>
+    <div id="customList" style="margin-top:12px;"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalSymptoms">
+  <div class="modal-panel">
+    <div class="modal-head"><h2 id="t-symptomsTitle2">Симптомы</h2><button class="modal-close" data-close="modalSymptoms">×</button></div>
+    <p class="intro" id="t-symptomsIntro"></p>
+    <div class="add-row" style="margin-bottom:8px;">
+      <input type="text" id="symptomFoodInput" placeholder="">
+    </div>
+    <textarea class="fridge-textarea" id="symptomNoteInput" placeholder=""></textarea>
+    <button class="find-btn symptom-btn" id="symptomAddBtn" type="button"></button>
+    <p class="empty-note" id="symptomsEmpty" style="display:none;"></p>
+    <div id="symptomsList" style="margin-top:12px;"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalBuy">
+  <div class="modal-panel">
+    <div class="modal-head"><h2 id="t-buyTitle2">Купить</h2><button class="modal-close" data-close="modalBuy">×</button></div>
+    <p class="intro" id="t-buyIntro"></p>
+    <div class="chip-row" id="buyChips"></div>
+    <p class="empty-note" id="buyEmpty" style="display:none;"></p>
+    <div class="add-row">
+      <input type="text" id="buyInput" placeholder="">
+      <button type="button" class="buy-add-btn" id="buyAddBtn"></button>
+    </div>
+  </div>
+</div>
+
+<script>
+const UI = {
+  title:{ru:'Улей', en:'Hive', es:'Colmena'},
+  subtitle:{ru:'План здорового питания на неделю', en:'A weekly healthy eating plan', es:'Un plan semanal de alimentación saludable'},
+  dietTitle:{ru:'Выберите тип питания', en:'Choose your diet', es:'Elige tu dieta'},
+  breakfast:{ru:'Завтрак', en:'Breakfast', es:'Desayuno'},
+  lunch:{ru:'Обед', en:'Lunch', es:'Almuerzo'},
+  dinner:{ru:'Ужин', en:'Dinner', es:'Cena'},
+  editTitle:{ru:'Изменить блюдо', en:'Edit dish', es:'Editar plato'},
+  variantTitle:{ru:'Другой вариант блюда', en:'Try another dish', es:'Probar otro plato'},
+  cautionTitle:{ru:'Есть с осторожностью', en:'Eat with caution', es:'Comer con precaución'},
+  forbidTitle:{ru:'Нельзя есть', en:'Not allowed', es:'No permitido'},
+  updateMenuBtn:{ru:'Обновить меню', en:'Refresh menu', es:'Actualizar menú'},
+  composeTitle:{ru:'Собрать своё блюдо на этот день', en:'Compose your own dish for this day', es:'Componer tu propio plato para este día'},
+  customSelectPlaceholder:{ru:'— свой текст —', en:'— free text —', es:'— texto libre —'},
+  favoriteOnTitle:{ru:'Добавить в избранное', en:'Add to favorites', es:'Añadir a favoritos'},
+  favoriteOffTitle:{ru:'Убрать из избранного', en:'Remove from favorites', es:'Quitar de favoritos'},
+  favoritesBtn:{ru:'Избранное', en:'Favorites', es:'Favoritos'},
+  favoritesEmpty:{ru:'Пока нет избранных блюд — нажимайте на сердечко на карточке блюда.', en:'No favorites yet — tap the heart on a dish card.', es:'Aún no hay favoritos — toca el corazón en la tarjeta del plato.'},
+  customBtn:{ru:'Мои блюда', en:'My dishes', es:'Mis platos'},
+  customIntro:{ru:'Впишите название своего блюда и, если хотите, короткий рецепт.', en:'Enter your dish name and, if you like, a short recipe.', es:'Escribe el nombre de tu plato y, si quieres, una receta breve.'},
+  customNamePlaceholder:{ru:'Название блюда', en:'Dish name', es:'Nombre del plato'},
+  customHowPlaceholder:{ru:'Как готовить (необязательно)', en:'How to cook it (optional)', es:'Cómo prepararlo (opcional)'},
+  customEmpty:{ru:'Вы ещё не добавили своих блюд.', en:"You haven't added any dishes yet.", es:'Aún no has añadido tus platos.'},
+  symptomsBtn:{ru:'Симптомы', en:'Symptoms', es:'Síntomas'},
+  symptomsIntro:{ru:'Отмечайте, после какой еды почувствовали дискомфорт — это личные заметки.', en:'Note which foods caused discomfort — these are personal notes.', es:'Anota qué alimentos te causaron molestias — son notas personales.'},
+  symptomFoodPlaceholder:{ru:'Какая еда', en:'Which food', es:'Qué alimento'},
+  symptomNotePlaceholder:{ru:'Что почувствовали (необязательно)', en:'What you felt (optional)', es:'Qué sentiste (opcional)'},
+  symptomsEmpty:{ru:'Заметок пока нет.', en:'No notes yet.', es:'Aún no hay notas.'},
+  buyBtn:{ru:'Купить', en:'Buy', es:'Comprar'},
+  buyIntro:{ru:'Запишите продукты, которых у вас нет или надо докупить.', en:'List the foods you\'re out of or need to buy.', es:'Anota los alimentos que te faltan o necesitas comprar.'},
+  buyPlaceholder:{ru:'Например: молоко', en:'e.g. milk', es:'Por ejemplo: leche'},
+  buyEmpty:{ru:'Список покупок пуст.', en:'Shopping list is empty.', es:'La lista de compras está vacía.'},
+  caloriesToggle:{ru:'Калории', en:'Calories', es:'Calorías'},
+  caloriesOnTitle:{ru:'Показать калории в блюдах', en:'Show calories in dishes', es:'Mostrar calorías en los platos'},
+  caloriesOffTitle:{ru:'Скрыть калории', en:'Hide calories', es:'Ocultar calorías'},
+  kcalWord:{ru:'ккал', en:'kcal', es:'kcal'},
+  constructorIntro:{ru:'Это ваш конструктор — впишите блюдо сами или выберите из «Моих блюд» для каждого дня и приёма пищи.',
+    en:'This is your constructor — type a dish yourself or pick one from "My dishes" for each day and meal.',
+    es:'Este es tu constructor — escribe un plato o elígelo de "Mis platos" para cada día y comida.'},
+  profileLabel:{ru:'Профиль:', en:'Profile:', es:'Perfil:'},
+  newProfilePrompt:{ru:'Имя нового профиля', en:'New profile name', es:'Nombre del nuevo perfil'},
+  storageWarning:{ru:'Браузер блокирует сохранение данных на этой странице — добавленные профили, продукты и заметки не сохранятся после закрытия. Попробуйте открыть ссылку в обычном браузере (не во встроенном браузере мессенджера) и выключить приватный режим.',
+    en:'This browser is blocking data storage on this page — added profiles, foods and notes won\'t be saved after closing. Try opening the link in a regular browser (not a messaging app\'s built-in browser) and turn off private mode.',
+    es:'Este navegador está bloqueando el guardado de datos en esta página — los perfiles, alimentos y notas añadidos no se guardarán al cerrar. Prueba a abrir el enlace en un navegador normal (no el integrado de una app de mensajería) y desactiva el modo privado.'},
+  containsLabel:{ru:'Содержит:', en:'Contains:', es:'Contiene:'},
+  swappedLabel:{ru:'Заменено — в другом варианте было:', en:'Swapped — the other option had:', es:'Sustituido — la otra opción tenía:'},
+  articlesBtn:{ru:'Статьи', en:'Articles', es:'Artículos'},
+  articlesSubtitle:{ru:'О витаминах, добавках и разных диетах', en:'On vitamins, supplements and different diets', es:'Sobre vitaminas, suplementos y distintas dietas'},
+  forbiddenBtn:{ru:'Продукты, которые нельзя', en:"Foods I can't eat", es:'Alimentos que no puedo comer'},
+  forbiddenPlaceholder:{ru:'Например: орехи', en:'e.g. peanuts', es:'Por ejemplo: cacahuetes'},
+  addBtn:{ru:'Добавить', en:'Add', es:'Añadir'},
+  forbiddenEmpty:{ru:'Список пуст — добавьте продукты, которые вам нельзя', en:"List is empty — add foods you can't eat", es:'La lista está vacía: añade alimentos que no puedes comer'},
+  forbiddenNote:{ru:'Блюда с этими продуктами будут заменены другим вариантом или помечены знаком осторожности.',
+    en:"Dishes containing these will be swapped for another option or flagged with a caution mark.",
+    es:'Los platos que los contengan se sustituirán por otra opción o se marcarán con precaución.'},
+  fridgeBtn:{ru:'Из того, что есть', en:"What's in my fridge", es:'Lo que tengo en la nevera'},
+  fridgeIntro:{ru:'Напишите продукты, которые у вас есть сейчас — через запятую.', en:'List the ingredients you have right now, separated by commas.', es:'Escribe los ingredientes que tienes ahora, separados por comas.'},
+  fridgePlaceholder:{ru:'Например: курица, брокколи, рис', en:'e.g. chicken, broccoli, rice', es:'Por ejemplo: pollo, brócoli, arroz'},
+  findBtn:{ru:'Найти блюдо', en:'Find a dish', es:'Buscar un plato'},
+  loadingText:{ru:'Подбираю блюдо…', en:'Finding a dish…', es:'Buscando un plato…'},
+  unavailableText:{ru:'Эта функция сейчас недоступна в вашем клиенте.', en:"This feature isn't available in your client right now.", es:'Esta función no está disponible ahora en tu cliente.'},
+  fridgeConsent:{ru:'Использует Claude — при первом запросе браузер попросит разрешение.', en:'Uses Claude — your browser will ask for permission on first use.', es:'Usa Claude — tu navegador pedirá permiso la primera vez.'},
+  emptyInput:{ru:'Впишите хотя бы один продукт.', en:'Enter at least one ingredient.', es:'Escribe al menos un ingrediente.'},
+  timeLabel:{ru:'Время приёма пищи', en:'Meal time', es:'Hora de la comida'},
+  reminderOnTitle:{ru:'Включить напоминание', en:'Turn on reminder', es:'Activar recordatorio'},
+  reminderOffTitle:{ru:'Выключить напоминание', en:'Turn off reminder', es:'Desactivar recordatorio'},
+  reminderHint:{ru:'Сработает, если вкладка останется открытой', en:'Works only while this tab stays open', es:'Funciona solo si esta pestaña permanece abierta'},
+  close:{ru:'Закрыть', en:'Close', es:'Cerrar'},
+  footer:{ru:'Это ориентировочный план. При особых потребностях в питании проконсультируйтесь со специалистом.',
+          en:'This is a general plan. Consult a specialist for specific dietary needs.',
+          es:'Este es un plan general. Consulta a un especialista para necesidades dietéticas específicas.'}
+};
+
+const DAY_NAMES = {
+  ru:['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],
+  en:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+  es:['Lun','Mar','Mié','Jue','Vie','Sáb','Dom']
+};
+
+const DIET_ICONS = {
+  balanced:'<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="16" fill="none" stroke="#DFA400" stroke-width="2"/><path d="M20 4 A16 16 0 0 1 34.5 26" fill="none" stroke="#F7C948" stroke-width="2"/><circle cx="20" cy="20" r="3" fill="#DFA400"/></svg>',
+  vegetarian:'<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><path d="M20 6 C10 10 8 22 20 34 C32 22 30 10 20 6 Z" fill="none" stroke="#5C8A3A" stroke-width="2"/><line x1="20" y1="12" x2="20" y2="30" stroke="#5C8A3A" stroke-width="1.5"/></svg>',
+  keto:'<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><ellipse cx="20" cy="20" rx="11" ry="15" fill="none" stroke="#5C8A3A" stroke-width="2"/><ellipse cx="20" cy="24" rx="5" ry="6" fill="#DFA400"/></svg>',
+  mediterranean:'<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><path d="M8 26 C14 14 26 14 32 26" fill="none" stroke="#5C8A3A" stroke-width="2"/><circle cx="14" cy="22" r="3" fill="#5C8A3A"/><circle cx="20" cy="17" r="3" fill="#6FA33F"/><circle cx="26" cy="22" r="3" fill="#5C8A3A"/></svg>',
+  acne:'<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><path d="M20 6 C26 16 30 22 30 27 A10 10 0 0 1 10 27 C10 22 14 16 20 6 Z" fill="none" stroke="#DFA400" stroke-width="2"/></svg>',
+  grainfree:'<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><line x1="20" y1="6" x2="20" y2="34" stroke="#DFA400" stroke-width="2"/><path d="M20 10 L15 14 M20 10 L25 14 M20 16 L15 20 M20 16 L25 20 M20 22 L15 26 M20 22 L25 26" stroke="#DFA400" stroke-width="1.6"/><line x1="9" y1="31" x2="31" y2="9" stroke="#A6432F" stroke-width="2"/></svg>',
+  newdiet:'<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><path d="M20 34 L20 18" stroke="#3F7D33" stroke-width="2" fill="none"/><path d="M20 22 C12 22 8 16 8 10 C16 10 20 16 20 22 Z" fill="none" stroke="#5C8A3A" stroke-width="2"/><path d="M20 18 C28 18 32 12 32 6 C24 6 20 12 20 18 Z" fill="none" stroke="#6FA33F" stroke-width="2"/></svg>',
+  newdiet:'<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><path d="M20 6 C10 10 8 22 20 34 C32 22 30 10 20 6 Z" fill="none" stroke="#3F7D33" stroke-width="2"/><line x1="20" y1="12" x2="20" y2="30" stroke="#3F7D33" stroke-width="1.5"/><circle cx="14" cy="18" r="1.6" fill="#3F7D33"/><circle cx="26" cy="18" r="1.6" fill="#3F7D33"/></svg>'
+};
+
+const DIETS = {
+  balanced:{
+    name:{ru:'Сбалансированное', en:'Balanced', es:'Equilibrada'},
+    desc:{ru:'Баланс белков, жиров и углеводов', en:'Balanced protein, fat and carbs', es:'Equilibrio de proteínas, grasas y carbohidratos'},
+    days:[
+      {b:[{ru:'Овсянка с ягодами и орехами', en:'Oatmeal with berries and nuts', es:'Avena con bayas y nueces'},{ru:'Гречневая каша с бананом', en:'Buckwheat porridge with banana', es:'Papilla de trigo sarraceno con plátano'},{ru:'Мюсли с молоком и фруктами', en:'Muesli with milk and fruit', es:'Muesli con leche y fruta'}],
+       l:[{ru:'Куриная грудка с киноа и овощами', en:'Grilled chicken with quinoa and vegetables', es:'Pechuga de pollo con quinoa y verduras'},{ru:'Индейка с булгуром и овощами', en:'Turkey with bulgur and vegetables', es:'Pavo con bulgur y verduras'},{ru:'Рыба с рисом и овощами', en:'Fish with rice and vegetables', es:'Pescado con arroz y verduras'}],
+       d:[{ru:'Запечённый лосось со спаржей', en:'Baked salmon with asparagus', es:'Salmón al horno con espárragos'},{ru:'Куриное филе с брокколи', en:'Chicken fillet with broccoli', es:'Filete de pollo con brócoli'},{ru:'Индейка с овощами гриль', en:'Turkey with grilled vegetables', es:'Pavo con verduras a la parrilla'}]},
+      {b:[{ru:'Греческий йогурт с гранолой и бананом', en:'Greek yogurt with granola and banana', es:'Yogur griego con granola y plátano'},{ru:'Тосты с авокадо и яйцом', en:'Avocado toast with egg', es:'Tostada de aguacate con huevo'},{ru:'Яйца варёные с тостом', en:'Boiled eggs with toast', es:'Huevos cocidos con tostada'}],
+       l:[{ru:'Индейка с бурым рисом и брокколи', en:'Turkey with brown rice and broccoli', es:'Pavo con arroz integral y brócoli'},{ru:'Говядина с рисом и салатом', en:'Beef with rice and salad', es:'Carne de res con arroz y ensalada'},{ru:'Курица с рисом и брокколи', en:'Chicken with rice and broccoli', es:'Pollo con arroz y brócoli'}],
+       d:[{ru:'Треска с овощами на пару', en:'Steamed cod with vegetables', es:'Bacalao al vapor con verduras'},{ru:'Запечённая курица с овощами', en:'Roasted chicken with vegetables', es:'Pollo asado con verduras'},{ru:'Говядина с овощами гриль', en:'Beef with grilled vegetables', es:'Carne de res con verduras a la parrilla'}]},
+      {b:[{ru:'Омлет со шпинатом и томатами', en:'Omelet with spinach and tomatoes', es:'Tortilla con espinacas y tomates'},{ru:'Творог с фруктами', en:'Cottage cheese with fruit', es:'Requesón con fruta'},{ru:'Творог с бананом', en:'Cottage cheese with banana', es:'Requesón con plátano'}],
+       l:[{ru:'Говядина с гречкой и салатом', en:'Beef with buckwheat and salad', es:'Carne de res con trigo sarraceno y ensalada'},{ru:'Рыба с киноа и зеленью', en:'Fish with quinoa and greens', es:'Pescado con quinoa y verduras'},{ru:'Индейка с киноа и салатом', en:'Turkey with quinoa and salad', es:'Pavo con quinoa y ensalada'}],
+       d:[{ru:'Запечённая курица с бататом', en:'Roasted chicken with sweet potato', es:'Pollo asado con batata'},{ru:'Индейка с тушёными овощами', en:'Turkey with stewed vegetables', es:'Pavo con verduras guisadas'},{ru:'Курица с овощным рагу', en:'Chicken with vegetable stew', es:'Pollo con guiso de verduras'}]},
+      {b:[{ru:'Творог с мёдом и орехами', en:'Cottage cheese with honey and nuts', es:'Requesón con miel y nueces'},{ru:'Омлет с овощами', en:'Vegetable omelet', es:'Tortilla de verduras'},{ru:'Йогурт с ягодами', en:'Yogurt with berries', es:'Yogur con bayas'}],
+       l:[{ru:'Рыбные котлеты с овощным рагу', en:'Fish cakes with vegetable stew', es:'Croquetas de pescado con guiso de verduras'},{ru:'Курица с гречкой и салатом', en:'Chicken with buckwheat and salad', es:'Pollo con trigo sarraceno y ensalada'},{ru:'Говядина с булгуром', en:'Beef with bulgur', es:'Carne de res con bulgur'}],
+       d:[{ru:'Тушёная говядина с овощами', en:'Braised beef with vegetables', es:'Ternera estofada con verduras'},{ru:'Лосось с овощами гриль', en:'Salmon with grilled vegetables', es:'Salmón con verduras a la parrilla'},{ru:'Рыба с брокколи', en:'Fish with broccoli', es:'Pescado con brócoli'}]},
+      {b:[{ru:'Смузи с бананом и шпинатом', en:'Banana-spinach smoothie', es:'Batido de plátano y espinaca'},{ru:'Йогурт с орехами и мёдом', en:'Yogurt with nuts and honey', es:'Yogur con nueces y miel'},{ru:'Гречка с молоком', en:'Buckwheat with milk', es:'Trigo sarraceno con leche'}],
+       l:[{ru:'Паста из цельного зерна с курицей', en:'Whole-grain pasta with chicken', es:'Pasta integral con pollo'},{ru:'Говяжий стейк с овощами', en:'Beef steak with vegetables', es:'Bistec de res con verduras'},{ru:'Курица с овощами и рисом', en:'Chicken with vegetables and rice', es:'Pollo con verduras y arroz'}],
+       d:[{ru:'Креветки с овощным салатом', en:'Shrimp with vegetable salad', es:'Camarones con ensalada de verduras'},{ru:'Треска с рисом и брокколи', en:'Cod with rice and broccoli', es:'Bacalao con arroz y brócoli'},{ru:'Индейка с салатом', en:'Turkey with salad', es:'Pavo con ensalada'}]},
+      {b:[{ru:'Гречневая каша с яблоком', en:'Buckwheat porridge with apple', es:'Papilla de trigo sarraceno con manzana'},{ru:'Смузи с ягодами и овсянкой', en:'Berry-oat smoothie', es:'Batido de bayas y avena'},{ru:'Омлет с овощами и сыром', en:'Omelet with vegetables and cheese', es:'Tortilla con verduras y queso'}],
+       l:[{ru:'Тако с индейкой и овощами', en:'Turkey tacos with vegetables', es:'Tacos de pavo con verduras'},{ru:'Курица с булгуром и зеленью', en:'Chicken with bulgur and greens', es:'Pollo con bulgur y verduras'},{ru:'Рыба с гречкой и салатом', en:'Fish with buckwheat and salad', es:'Pescado con trigo sarraceno y ensalada'}],
+       d:[{ru:'Запечённая треска с зеленью', en:'Baked cod with greens', es:'Bacalao al horno con verduras verdes'},{ru:'Индейка с цветной капустой', en:'Turkey with cauliflower', es:'Pavo con coliflor'},{ru:'Курица с тушёными овощами', en:'Chicken with stewed vegetables', es:'Pollo con verduras guisadas'}]},
+      {b:[{ru:'Блины из овсяной муки с ягодами', en:'Oat-flour pancakes with berries', es:'Panqueques de avena con bayas'},{ru:'Яйца пашот с тостом', en:'Poached eggs on toast', es:'Huevos escalfados con tostada'},{ru:'Творожные сырники с ягодами', en:'Cottage-cheese pancakes with berries', es:'Tortitas de requesón con bayas'}],
+       l:[{ru:'Овощной суп с курицей', en:'Vegetable soup with chicken', es:'Sopa de verduras con pollo'},{ru:'Рыбный суп с овощами', en:'Fish soup with vegetables', es:'Sopa de pescado con verduras'},{ru:'Куриный суп с гречкой', en:'Chicken buckwheat soup', es:'Sopa de pollo con trigo sarraceno'}],
+       d:[{ru:'Стейк из тунца с киноа', en:'Tuna steak with quinoa', es:'Filete de atún con quinoa'},{ru:'Куриные котлеты с салатом', en:'Chicken patties with salad', es:'Albóndigas de pollo con ensalada'},{ru:'Запечённая индейка с овощами', en:'Baked turkey with vegetables', es:'Pavo al horno con verduras'}]}
+    ]
+  },
+  vegetarian:{
+    name:{ru:'Вегетарианское', en:'Vegetarian', es:'Vegetariana'},
+    desc:{ru:'Без мяса и рыбы', en:'No meat or fish', es:'Sin carne ni pescado'},
+    days:[
+      {b:[{ru:'Овсянка с бананом и корицей', en:'Oatmeal with banana and cinnamon', es:'Avena con plátano y canela'},{ru:'Тосты с ореховой пастой и бананом', en:'Toast with nut butter and banana', es:'Tostada con crema de frutos secos y plátano'},{ru:'Гречневая каша с молоком', en:'Buckwheat porridge with milk', es:'Papilla de trigo sarraceno con leche'}],
+       l:[{ru:'Чечевичный суп с овощами', en:'Lentil soup with vegetables', es:'Sopa de lentejas con verduras'},{ru:'Салат с киноа и авокадо', en:'Quinoa avocado salad', es:'Ensalada de quinoa y aguacate'},{ru:'Салат с булгуром и овощами', en:'Bulgur vegetable salad', es:'Ensalada de bulgur y verduras'}],
+       d:[{ru:'Тофу с брокколи и рисом', en:'Tofu with broccoli and rice', es:'Tofu con brócoli y arroz'},{ru:'Овощной плов', en:'Vegetable pilaf', es:'Pilaf de verduras'},{ru:'Чечевичное карри', en:'Lentil curry', es:'Curry de lentejas'}]},
+      {b:[{ru:'Йогурт с мюсли и ягодами', en:'Yogurt with muesli and berries', es:'Yogur con muesli y bayas'},{ru:'Творог с ягодами', en:'Cottage cheese with berries', es:'Requesón con bayas'},{ru:'Тосты с арахисовой пастой', en:'Peanut butter toast', es:'Tostada con crema de cacahuete'}],
+       l:[{ru:'Салат из нута с авокадо', en:'Chickpea salad with avocado', es:'Ensalada de garbanzos con aguacate'},{ru:'Суп из красной чечевицы', en:'Red lentil soup', es:'Sopa de lentejas rojas'},{ru:'Овощной плов с фасолью', en:'Bean vegetable pilaf', es:'Pilaf de verduras con frijoles'}],
+       d:[{ru:'Баклажаны, запечённые с сыром', en:'Baked eggplant with cheese', es:'Berenjena al horno con queso'},{ru:'Тофу с овощами гриль', en:'Tofu with grilled vegetables', es:'Tofu con verduras a la parrilla'},{ru:'Сырные шарики с салатом', en:'Cheese balls with salad', es:'Bolitas de queso con ensalada'}]},
+      {b:[{ru:'Тосты с авокадо и яйцом', en:'Avocado toast with egg', es:'Tostada de aguacate con huevo'},{ru:'Смузи со шпинатом и бананом', en:'Spinach-banana smoothie', es:'Batido de espinaca y plátano'},{ru:'Йогурт с фруктами', en:'Yogurt with fruit', es:'Yogur con fruta'}],
+       l:[{ru:'Киноа с овощами гриль', en:'Quinoa with grilled vegetables', es:'Quinoa con verduras a la parrilla'},{ru:'Салат с фасолью и овощами', en:'Bean and vegetable salad', es:'Ensalada de frijoles y verduras'},{ru:'Салат с булгуром и нутом', en:'Bulgur chickpea salad', es:'Ensalada de bulgur y garbanzos'}],
+       d:[{ru:'Грибной ризотто', en:'Mushroom risotto', es:'Risotto de champiñones'},{ru:'Овощной плов с нутом', en:'Chickpea vegetable pilaf', es:'Pilaf de verduras con garbanzos'},{ru:'Овощная запеканка с сыром', en:'Vegetable casserole with cheese', es:'Cazuela de verduras con queso'}]},
+      {b:[{ru:'Творожная запеканка с ягодами', en:'Cottage cheese casserole with berries', es:'Cazuela de requesón con bayas'},{ru:'Овсяные оладьи с ягодами', en:'Oat pancakes with berries', es:'Tortitas de avena con bayas'},{ru:'Смузи с ягодами и овсянкой', en:'Berry-oat smoothie', es:'Batido de bayas y avena'}],
+       l:[{ru:'Фасолевый суп с овощами', en:'Bean soup with vegetables', es:'Sopa de frijoles con verduras'},{ru:'Салат с киноа и овощами', en:'Quinoa vegetable salad', es:'Ensalada de quinoa y verduras'},{ru:'Гороховый суп с овощами', en:'Pea soup with vegetables', es:'Sopa de guisantes con verduras'}],
+       d:[{ru:'Овощное карри с рисом', en:'Vegetable curry with rice', es:'Curry de verduras con arroz'},{ru:'Тыквенное ризотто', en:'Pumpkin risotto', es:'Risotto de calabaza'},{ru:'Тофу в томатном соусе', en:'Tofu in tomato sauce', es:'Tofu en salsa de tomate'}]},
+      {b:[{ru:'Смузи-боул с фруктами и семенами', en:'Smoothie bowl with fruit and seeds', es:'Bowl de batido con frutas y semillas'},{ru:'Йогурт с фруктами и орехами', en:'Yogurt with fruit and nuts', es:'Yogur con fruta y nueces'},{ru:'Творожные оладьи с ягодами', en:'Cottage-cheese pancakes with berries', es:'Tortitas de requesón con bayas'}],
+       l:[{ru:'Салат Капрезе с киноа', en:'Caprese salad with quinoa', es:'Ensalada Caprese con quinoa'},{ru:'Овощной суп с чечевицей', en:'Vegetable lentil soup', es:'Sopa de verduras con lentejas'},{ru:'Салат с авокадо и нутом', en:'Avocado chickpea salad', es:'Ensalada de aguacate y garbanzos'}],
+       d:[{ru:'Фаршированный перец с рисом', en:'Stuffed peppers with rice', es:'Pimientos rellenos de arroz'},{ru:'Баклажаны с томатным соусом', en:'Eggplant in tomato sauce', es:'Berenjena en salsa de tomate'},{ru:'Овощной гуляш', en:'Vegetable goulash', es:'Goulash de verduras'}]},
+      {b:[{ru:'Гречневые оладьи с йогуртом', en:'Buckwheat pancakes with yogurt', es:'Tortitas de trigo sarraceno con yogur'},{ru:'Тосты с хумусом и овощами', en:'Hummus toast with vegetables', es:'Tostada de hummus con verduras'},{ru:'Мюсли с йогуртом', en:'Muesli with yogurt', es:'Muesli con yogur'}],
+       l:[{ru:'Спагетти с томатным соусом и базиликом', en:'Spaghetti with tomato sauce and basil', es:'Espaguetis con salsa de tomate y albahaca'},{ru:'Салат Греческий с фетой', en:'Greek salad with feta', es:'Ensalada griega con feta'},{ru:'Паста с песто и овощами', en:'Pasta with pesto and vegetables', es:'Pasta con pesto y verduras'}],
+       d:[{ru:'Овощная лазанья', en:'Vegetable lasagna', es:'Lasaña de verduras'},{ru:'Кабачковые оладьи с йогуртом', en:'Zucchini fritters with yogurt', es:'Tortitas de calabacín con yogur'},{ru:'Запечённый сыр с овощами', en:'Baked cheese with vegetables', es:'Queso al horno con verduras'}]},
+      {b:[{ru:'Блины из нутовой муки', en:'Chickpea-flour pancakes', es:'Panqueques de harina de garbanzo'},{ru:'Овсянка с орехами и мёдом', en:'Oatmeal with nuts and honey', es:'Avena con nueces y miel'},{ru:'Гречневые блины с мёдом', en:'Buckwheat pancakes with honey', es:'Panqueques de trigo sarraceno con miel'}],
+       l:[{ru:'Салат с фалафелем', en:'Falafel salad', es:'Ensalada con falafel'},{ru:'Овощной кускус', en:'Vegetable couscous', es:'Cuscús de verduras'},{ru:'Салат с киноа и фетой', en:'Quinoa feta salad', es:'Ensalada de quinoa y feta'}],
+       d:[{ru:'Тыквенный суп-пюре с хлебом', en:'Pumpkin soup with bread', es:'Crema de calabaza con pan'},{ru:'Грибной суп-пюре', en:'Cream of mushroom soup', es:'Crema de champiñones'},{ru:'Овощной плов с грибами', en:'Mushroom vegetable pilaf', es:'Pilaf de verduras con champiñones'}]}
+    ]
+  },
+  keto:{
+    name:{ru:'Кето', en:'Keto', es:'Keto'},
+    desc:{ru:'Низкоуглеводное, много жиров', en:'Low-carb, high-fat', es:'Baja en carbohidratos, alta en grasas'},
+    days:[
+      {b:[{ru:'Яичница с беконом и авокадо', en:'Eggs with bacon and avocado', es:'Huevos con tocino y aguacate'},{ru:'Творог со сливками и орехами', en:'Cottage cheese with cream and nuts', es:'Requesón con crema y nueces'},{ru:'Сырные чипсы с авокадо', en:'Cheese crisps with avocado', es:'Chips de queso con aguacate'}],
+       l:[{ru:'Салат с курицей и сыром', en:'Chicken salad with cheese', es:'Ensalada de pollo con queso'},{ru:'Лосось с авокадо', en:'Salmon with avocado', es:'Salmón con aguacate'},{ru:'Куриные бёдра с сыром', en:'Chicken thighs with cheese', es:'Muslos de pollo con queso'}],
+       d:[{ru:'Стейк с овощами на сливочном масле', en:'Steak with buttered vegetables', es:'Bistec con verduras con mantequilla'},{ru:'Куриные бёдра с брокколи', en:'Chicken thighs with broccoli', es:'Muslos de pollo con brócoli'},{ru:'Свиная грудинка с овощами', en:'Pork belly with vegetables', es:'Panceta de cerdo con verduras'}]},
+      {b:[{ru:'Омлет с сыром и шпинатом', en:'Cheese and spinach omelet', es:'Tortilla con queso y espinacas'},{ru:'Авокадо с беконом', en:'Avocado with bacon', es:'Aguacate con tocino'},{ru:'Омлет с грибами и сыром', en:'Mushroom cheese omelet', es:'Tortilla con champiñones y queso'}],
+       l:[{ru:'Лосось с салатом из авокадо', en:'Salmon with avocado salad', es:'Salmón con ensalada de aguacate'},{ru:'Салат с курицей и авокадо', en:'Chicken avocado salad', es:'Ensalada de pollo y aguacate'},{ru:'Салат с яйцом и беконом', en:'Egg and bacon salad', es:'Ensalada de huevo y tocino'}],
+       d:[{ru:'Курица в сливочном соусе с брокколи', en:'Chicken in cream sauce with broccoli', es:'Pollo en salsa cremosa con brócoli'},{ru:'Свиная отбивная с цветной капустой', en:'Pork chop with cauliflower', es:'Chuleta de cerdo con coliflor'},{ru:'Треска в сливочном соусе', en:'Cod in cream sauce', es:'Bacalao en salsa cremosa'}]},
+      {b:[{ru:'Творог с орехами и сливками', en:'Cottage cheese with nuts and cream', es:'Requesón con nueces y crema'},{ru:'Яичные кексы с сыром', en:'Egg muffins with cheese', es:'Muffins de huevo con queso'},{ru:'Йогурт без сахара с орехами', en:'Sugar-free yogurt with nuts', es:'Yogur sin azúcar con nueces'}],
+       l:[{ru:'Тунец с оливками и огурцом', en:'Tuna with olives and cucumber', es:'Atún con aceitunas y pepino'},{ru:'Тунец с оливковым маслом', en:'Tuna with olive oil', es:'Atún con aceite de oliva'},{ru:'Куриное филе с сыром', en:'Chicken fillet with cheese', es:'Filete de pollo con queso'}],
+       d:[{ru:'Свиные рёбра с цветной капустой', en:'Pork ribs with cauliflower', es:'Costillas de cerdo con coliflor'},{ru:'Курица в сырном соусе', en:'Chicken in cheese sauce', es:'Pollo en salsa de queso'},{ru:'Говядина с грибами в сливках', en:'Beef with mushrooms in cream', es:'Carne de res con champiñones en crema'}]},
+      {b:[{ru:'Авокадо с яйцом пашот', en:'Avocado with poached egg', es:'Aguacate con huevo escalfado'},{ru:'Омлет с беконом', en:'Bacon omelet', es:'Tortilla con tocino'},{ru:'Творог с семенами льна', en:'Cottage cheese with flax seeds', es:'Requesón con semillas de lino'}],
+       l:[{ru:'Салат из тунца с майонезом', en:'Tuna salad with mayonnaise', es:'Ensalada de atún con mayonesa'},{ru:'Салат Кобб с курицей', en:'Chicken Cobb salad', es:'Ensalada Cobb con pollo'},{ru:'Салат с лососем и авокадо', en:'Salmon avocado salad', es:'Ensalada de salmón y aguacate'}],
+       d:[{ru:'Запечённая курица с цукини', en:'Baked chicken with zucchini', es:'Pollo al horno con calabacín'},{ru:'Лосось со сливочным соусом', en:'Salmon in cream sauce', es:'Salmón en salsa cremosa'},{ru:'Куриные бёдра гриль с брокколи', en:'Grilled chicken thighs with broccoli', es:'Muslos de pollo a la parrilla con brócoli'}]},
+      {b:[{ru:'Кето-смузи со шпинатом и авокадо', en:'Keto smoothie with spinach and avocado', es:'Batido keto con espinaca y aguacate'},{ru:'Смузи с авокадо и кокосом', en:'Avocado-coconut smoothie', es:'Batido de aguacate y coco'},{ru:'Яйца с сыром и шпинатом', en:'Eggs with cheese and spinach', es:'Huevos con queso y espinaca'}],
+       l:[{ru:'Фрикадельки с сырным соусом', en:'Meatballs with cheese sauce', es:'Albóndigas con salsa de queso'},{ru:'Куриные крылышки с сыром', en:'Chicken wings with cheese', es:'Alitas de pollo con queso'},{ru:'Свиная шейка с салатом', en:'Pork neck with salad', es:'Cuello de cerdo con ensalada'}],
+       d:[{ru:'Креветки в чесночном масле', en:'Shrimp in garlic butter', es:'Camarones en mantequilla de ajo'},{ru:'Стейк с грибами в масле', en:'Steak with buttered mushrooms', es:'Bistec con champiñones en mantequilla'},{ru:'Лосось на гриле с маслом', en:'Grilled salmon with butter', es:'Salmón a la parrilla con mantequilla'}]},
+      {b:[{ru:'Кето-оладьи с маслом', en:'Keto pancakes with butter', es:'Panqueques keto con mantequilla'},{ru:'Кето-блины с сыром', en:'Keto pancakes with cheese', es:'Panqueques keto con queso'},{ru:'Смузи с орехами и корицей', en:'Nutty cinnamon smoothie', es:'Batido de nueces y canela'}],
+       l:[{ru:'Куриные крылышки с салатом', en:'Chicken wings with salad', es:'Alitas de pollo con ensalada'},{ru:'Салат с тунцом и яйцом', en:'Tuna and egg salad', es:'Ensalada de atún y huevo'},{ru:'Куриный салат с сыром и орехами', en:'Chicken salad with cheese and nuts', es:'Ensalada de pollo con queso y nueces'}],
+       d:[{ru:'Свиная вырезка с грибами', en:'Pork tenderloin with mushrooms', es:'Lomo de cerdo con champiñones'},{ru:'Свиные рёбрышки гриль', en:'Grilled pork ribs', es:'Costillas de cerdo a la parrilla'},{ru:'Баранина с овощами на сливочном масле', en:'Lamb with buttered vegetables', es:'Cordero con verduras con mantequilla'}]},
+      {b:[{ru:'Яичные маффины с беконом', en:'Egg muffins with bacon', es:'Muffins de huevo con tocino'},{ru:'Яйца с авокадо и беконом', en:'Eggs with avocado and bacon', es:'Huevos con aguacate y tocino'},{ru:'Творожный омлет', en:'Cottage-cheese omelet', es:'Tortilla de requesón'}],
+       l:[{ru:'Салат Кобб', en:'Cobb salad', es:'Ensalada Cobb'},{ru:'Салат Цезарь без сухариков', en:'Caesar salad without croutons', es:'Ensalada César sin picatostes'},{ru:'Тунец с сыром и зеленью', en:'Tuna with cheese and greens', es:'Atún con queso y verduras'}],
+       d:[{ru:'Запечённая треска в сливочном соусе', en:'Baked cod in cream sauce', es:'Bacalao al horno en salsa cremosa'},{ru:'Курица с сырным соусом и брокколи', en:'Chicken with cheese sauce and broccoli', es:'Pollo con salsa de queso y brócoli'},{ru:'Куриные бёдра с грибами', en:'Chicken thighs with mushrooms', es:'Muslos de pollo con champiñones'}]}
+    ]
+  },
+  mediterranean:{
+    name:{ru:'Средиземноморское', en:'Mediterranean', es:'Mediterránea'},
+    desc:{ru:'Овощи, рыба, оливковое масло', en:'Vegetables, fish, olive oil', es:'Verduras, pescado, aceite de oliva'},
+    days:[
+      {b:[{ru:'Греческий йогурт с мёдом и орехами', en:'Greek yogurt with honey and nuts', es:'Yogur griego con miel y nueces'},{ru:'Омлет с оливками и томатами', en:'Omelet with olives and tomato', es:'Tortilla con aceitunas y tomate'},{ru:'Фруктовый салат с орехами', en:'Fruit salad with nuts', es:'Ensalada de frutas con nueces'}],
+       l:[{ru:'Салат с фетой и оливками', en:'Salad with feta and olives', es:'Ensalada con feta y aceitunas'},{ru:'Салат с нутом и оливковым маслом', en:'Chickpea salad with olive oil', es:'Ensalada de garbanzos con aceite de oliva'},{ru:'Паста с оливками и фетой', en:'Pasta with olives and feta', es:'Pasta con aceitunas y feta'}],
+       d:[{ru:'Запечённая рыба с овощами', en:'Baked fish with vegetables', es:'Pescado al horno con verduras'},{ru:'Креветки с киноа', en:'Shrimp with quinoa', es:'Camarones con quinoa'},{ru:'Курица с лимоном и оливками', en:'Chicken with lemon and olives', es:'Pollo con limón y aceitunas'}]},
+      {b:[{ru:'Тосты с оливковым маслом и томатом', en:'Toast with olive oil and tomato', es:'Tostada con aceite de oliva y tomate'},{ru:'Йогурт с орехами и мёдом', en:'Yogurt with nuts and honey', es:'Yogur con nueces y miel'},{ru:'Омлет с фетой и зеленью', en:'Omelet with feta and herbs', es:'Tortilla con feta y hierbas'}],
+       l:[{ru:'Хумус с овощами и питой', en:'Hummus with vegetables and pita', es:'Hummus con verduras y pan pita'},{ru:'Салат Греческий с курицей', en:'Greek salad with chicken', es:'Ensalada griega con pollo'},{ru:'Салат с нутом и фетой', en:'Chickpea feta salad', es:'Ensalada de garbanzos y feta'}],
+       d:[{ru:'Курица гриль с булгуром', en:'Grilled chicken with bulgur', es:'Pollo a la parrilla con bulgur'},{ru:'Запечённая скумбрия с овощами', en:'Baked mackerel with vegetables', es:'Caballa al horno con verduras'},{ru:'Запечённая треска с оливками', en:'Baked cod with olives', es:'Bacalao al horno con aceitunas'}]},
+      {b:[{ru:'Овсянка с инжиром и орехами', en:'Oatmeal with figs and nuts', es:'Avena con higos y nueces'},{ru:'Тосты с хумусом', en:'Hummus toast', es:'Tostada de hummus'},{ru:'Гранола с орехами и мёдом', en:'Granola with nuts and honey', es:'Granola con nueces y miel'}],
+       l:[{ru:'Салат Табуле с нутом', en:'Tabbouleh salad with chickpeas', es:'Ensalada tabulé con garbanzos'},{ru:'Паста с оливками и томатами', en:'Pasta with olives and tomato', es:'Pasta con aceitunas y tomate'},{ru:'Овощной суп с фасолью', en:'Vegetable bean soup', es:'Sopa de verduras con frijoles'}],
+       d:[{ru:'Паста с морепродуктами', en:'Pasta with seafood', es:'Pasta con mariscos'},{ru:'Курица с булгуром и овощами', en:'Chicken with bulgur and vegetables', es:'Pollo con bulgur y verduras'},{ru:'Курица с булгуром и оливками', en:'Chicken with bulgur and olives', es:'Pollo con bulgur y aceitunas'}]},
+      {b:[{ru:'Омлет с томатами и базиликом', en:'Omelet with tomato and basil', es:'Tortilla con tomate y albahaca'},{ru:'Фруктовый салат с орехами', en:'Fruit salad with nuts', es:'Ensalada de frutas con nueces'},{ru:'Тосты с оливковой тапенадой', en:'Toast with olive tapenade', es:'Tostada con tapenade de aceitunas'}],
+       l:[{ru:'Средиземноморский салат с тунцом', en:'Mediterranean tuna salad', es:'Ensalada mediterránea con atún'},{ru:'Салат с тунцом и фасолью', en:'Tuna and bean salad', es:'Ensalada de atún y frijoles'},{ru:'Салат с сыром фета и овощами', en:'Feta and vegetable salad', es:'Ensalada de queso feta y verduras'}],
+       d:[{ru:'Баранина с овощами гриль', en:'Lamb with grilled vegetables', es:'Cordero con verduras a la parrilla'},{ru:'Баранина с булгуром', en:'Lamb with bulgur', es:'Cordero con bulgur'},{ru:'Запечённая скумбрия с лимоном', en:'Baked mackerel with lemon', es:'Caballa al horno con limón'}]},
+      {b:[{ru:'Фруктовый салат с йогуртом', en:'Fruit salad with yogurt', es:'Ensalada de frutas con yogur'},{ru:'Овсянка с инжиром', en:'Oatmeal with figs', es:'Avena con higos'},{ru:'Йогурт с гранолой и мёдом', en:'Yogurt with granola and honey', es:'Yogur con granola y miel'}],
+       l:[{ru:'Ризотто с грибами и пармезаном', en:'Risotto with mushrooms and parmesan', es:'Risotto con champiñones y parmesano'},{ru:'Ризотто с морепродуктами', en:'Seafood risotto', es:'Risotto de mariscos'},{ru:'Паста с томатами и базиликом', en:'Pasta with tomato and basil', es:'Pasta con tomate y albahaca'}],
+       d:[{ru:'Запечённый морской окунь', en:'Baked sea bass', es:'Lubina al horno'},{ru:'Запечённый тунец с овощами', en:'Baked tuna with vegetables', es:'Atún al horno con verduras'},{ru:'Курица с овощами и оливковым маслом', en:'Chicken with vegetables and olive oil', es:'Pollo con verduras y aceite de oliva'}]},
+      {b:[{ru:'Гранола с йогуртом и ягодами', en:'Granola with yogurt and berries', es:'Granola con yogur y bayas'},{ru:'Гранола с фруктами', en:'Granola with fruit', es:'Granola con fruta'},{ru:'Тосты с авокадо и фетой', en:'Avocado feta toast', es:'Tostada de aguacate y feta'}],
+       l:[{ru:'Фаршированные виноградные листья', en:'Stuffed grape leaves', es:'Hojas de parra rellenas'},{ru:'Фаршированные томаты рисом', en:'Rice-stuffed tomatoes', es:'Tomates rellenos de arroz'},{ru:'Салат с булгуром и овощами', en:'Bulgur vegetable salad', es:'Ensalada de bulgur y verduras'}],
+       d:[{ru:'Курица в томатном соусе с оливками', en:'Chicken in tomato sauce with olives', es:'Pollo en salsa de tomate con aceitunas'},{ru:'Курица с оливками и лимоном', en:'Chicken with olives and lemon', es:'Pollo con aceitunas y limón'},{ru:'Запечённый лосось с лимоном', en:'Baked salmon with lemon', es:'Salmón al horno con limón'}]},
+      {b:[{ru:'Шакшука с хлебом', en:'Shakshuka with bread', es:'Shakshuka con pan'},{ru:'Шакшука с фетой', en:'Shakshuka with feta', es:'Shakshuka con feta'},{ru:'Омлет с зеленью и оливками', en:'Herb and olive omelet', es:'Tortilla con hierbas y aceitunas'}],
+       l:[{ru:'Греческий салат с оливковым маслом', en:'Greek salad with olive oil', es:'Ensalada griega con aceite de oliva'},{ru:'Салат Табуле с курицей', en:'Tabbouleh salad with chicken', es:'Ensalada tabulé con pollo'},{ru:'Хумус с питой и овощами', en:'Hummus with pita and vegetables', es:'Hummus con pan pita y verduras'}],
+       d:[{ru:'Запечённые овощи с киноа', en:'Roasted vegetables with quinoa', es:'Verduras asadas con quinoa'},{ru:'Запечённый лосось с овощами', en:'Baked salmon with vegetables', es:'Salmón al horno con verduras'},{ru:'Курица с баклажанами и томатами', en:'Chicken with eggplant and tomato', es:'Pollo con berenjena y tomate'}]}
+    ]
+  },
+  acne:{
+    name:{ru:'Против акне', en:'Anti-acne', es:'Contra el acné'},
+    desc:{ru:'Низкий гликемический индекс, без сахара и молочных продуктов', en:'Low glycemic index, no added sugar or dairy', es:'Bajo índice glucémico, sin azúcar ni lácteos'},
+    days:[
+      {b:[{ru:'Овсянка на воде с ягодами и семенами льна', en:'Water-based oatmeal with berries and flax seeds', es:'Avena con agua, bayas y semillas de lino'},{ru:'Смузи со шпинатом и семенами чиа', en:'Spinach chia smoothie', es:'Batido de espinaca y semillas de chía'},{ru:'Творог с ягодами без сахара', en:'Sugar-free cottage cheese with berries', es:'Requesón sin azúcar con bayas'}],
+       l:[{ru:'Запечённая курица с киноа и зеленью', en:'Baked chicken with quinoa and greens', es:'Pollo al horno con quinoa y verduras'},{ru:'Индейка с гречкой и зеленью', en:'Turkey with buckwheat and greens', es:'Pavo con trigo sarraceno y verduras'},{ru:'Салат с индейкой и авокадо', en:'Turkey avocado salad', es:'Ensalada de pavo y aguacate'}],
+       d:[{ru:'Лосось на пару с брокколи', en:'Steamed salmon with broccoli', es:'Salmón al vapor con brócoli'},{ru:'Запечённая треска с овощами', en:'Baked cod with vegetables', es:'Bacalao al horno con verduras'},{ru:'Курица с цукини на пару', en:'Steamed chicken with zucchini', es:'Pollo al vapor con calabacín'}]},
+      {b:[{ru:'Смузи со шпинатом, огурцом и семенами чиа', en:'Spinach, cucumber and chia smoothie', es:'Batido de espinaca, pepino y semillas de chía'},{ru:'Яичница с зеленью на оливковом масле', en:'Eggs with greens in olive oil', es:'Huevos con verduras en aceite de oliva'},{ru:'Гречневая каша с ягодами', en:'Buckwheat porridge with berries', es:'Papilla de trigo sarraceno con bayas'}],
+       l:[{ru:'Салат с тунцом, авокадо и оливковым маслом', en:'Tuna, avocado and olive oil salad', es:'Ensalada de atún, aguacate y aceite de oliva'},{ru:'Салат с киноа и авокадо', en:'Quinoa avocado salad', es:'Ensalada de quinoa y aguacate'},{ru:'Индейка с брокколи на пару', en:'Steamed turkey with broccoli', es:'Pavo al vapor con brócoli'}],
+       d:[{ru:'Индейка с тушёными овощами', en:'Turkey with stewed vegetables', es:'Pavo con verduras guisadas'},{ru:'Курица с брокколи на пару', en:'Steamed chicken with broccoli', es:'Pollo al vapor con brócoli'},{ru:'Лосось с зеленью', en:'Salmon with greens', es:'Salmón con verduras verdes'}]},
+      {b:[{ru:'Яичница с авокадо и зеленью', en:'Eggs with avocado and greens', es:'Huevos con aguacate y verduras'},{ru:'Чиа-пудинг с ягодами', en:'Chia pudding with berries', es:'Pudín de chía con bayas'},{ru:'Омлет с зеленью на оливковом масле', en:'Herb omelet in olive oil', es:'Tortilla con hierbas en aceite de oliva'}],
+       l:[{ru:'Гречка с овощами и оливковым маслом', en:'Buckwheat with vegetables and olive oil', es:'Trigo sarraceno con verduras y aceite de oliva'},{ru:'Гречка с курицей и овощами', en:'Buckwheat with chicken and vegetables', es:'Trigo sarraceno con pollo y verduras'},{ru:'Салат с киноа и курицей', en:'Quinoa chicken salad', es:'Ensalada de quinoa y pollo'}],
+       d:[{ru:'Запечённая треска с цукини', en:'Baked cod with zucchini', es:'Bacalao al horno con calabacín'},{ru:'Запечённая скумбрия с зеленью', en:'Baked mackerel with greens', es:'Caballa al horno con verduras verdes'},{ru:'Треска с цукини и чесноком', en:'Cod with zucchini and garlic', es:'Bacalao con calabacín y ajo'}]},
+      {b:[{ru:'Чиа-пудинг на растительном молоке с ягодами', en:'Chia pudding with plant milk and berries', es:'Pudín de chía con leche vegetal y bayas'},{ru:'Овощной омлет', en:'Vegetable omelet', es:'Tortilla de verduras'},{ru:'Смузи с авокадо и шпинатом', en:'Avocado spinach smoothie', es:'Batido de aguacate y espinaca'}],
+       l:[{ru:'Куриный суп с овощами, без картофеля', en:'Chicken soup with vegetables, no potato', es:'Sopa de pollo con verduras, sin patata'},{ru:'Суп из индейки с овощами', en:'Turkey soup with vegetables', es:'Sopa de pavo con verduras'},{ru:'Куриный суп с киноа и овощами', en:'Chicken quinoa vegetable soup', es:'Sopa de pollo con quinoa y verduras'}],
+       d:[{ru:'Креветки с брокколи и чесноком', en:'Shrimp with broccoli and garlic', es:'Camarones con brócoli y ajo'},{ru:'Креветки с цукини', en:'Shrimp with zucchini', es:'Camarones con calabacín'},{ru:'Индейка с цветной капустой', en:'Turkey with cauliflower', es:'Pavo con coliflor'}]},
+      {b:[{ru:'Овощной омлет на оливковом масле', en:'Vegetable omelet in olive oil', es:'Tortilla de verduras con aceite de oliva'},{ru:'Гречневая каша с тыквенными семечками', en:'Buckwheat porridge with pumpkin seeds', es:'Papilla de trigo sarraceno con semillas de calabaza'},{ru:'Яйца с зеленью и авокадо', en:'Eggs with greens and avocado', es:'Huevos con verduras y aguacate'}],
+       l:[{ru:'Салат с киноа, огурцом и зеленью', en:'Quinoa, cucumber and herb salad', es:'Ensalada de quinoa, pepino y hierbas'},{ru:'Салат с курицей и авокадо', en:'Chicken avocado salad', es:'Ensalada de pollo y aguacate'},{ru:'Салат с тунцом и зеленью', en:'Tuna greens salad', es:'Ensalada de atún y verduras'}],
+       d:[{ru:'Запечённая скумбрия с овощами', en:'Baked mackerel with vegetables', es:'Caballa al horno con verduras'},{ru:'Запечённая треска с брокколи', en:'Baked cod with broccoli', es:'Bacalao al horno con brócoli'},{ru:'Кролик с брокколи', en:'Rabbit with broccoli', es:'Conejo con brócoli'}]},
+      {b:[{ru:'Гречневая каша с тыквенными семечками', en:'Buckwheat porridge with pumpkin seeds', es:'Papilla de trigo sarraceno con semillas de calabaza'},{ru:'Смузи-боул с семенами', en:'Smoothie bowl with seeds', es:'Bowl de batido con semillas'},{ru:'Чиа-пудинг без сахара', en:'Sugar-free chia pudding', es:'Pudín de chía sin azúcar'}],
+       l:[{ru:'Куриные котлеты на пару с овощами', en:'Steamed chicken patties with vegetables', es:'Albóndigas de pollo al vapor con verduras'},{ru:'Куриный суп с киноа', en:'Chicken quinoa soup', es:'Sopa de pollo con quinoa'},{ru:'Курица с гречкой на пару', en:'Steamed chicken with buckwheat', es:'Pollo al vapor con trigo sarraceno'}],
+       d:[{ru:'Тушёный кролик с зеленью', en:'Stewed rabbit with greens', es:'Conejo guisado con verduras'},{ru:'Кролик с овощами', en:'Rabbit with vegetables', es:'Conejo con verduras'},{ru:'Скумбрия с зеленью на пару', en:'Steamed mackerel with greens', es:'Caballa al vapor con verduras verdes'}]},
+      {b:[{ru:'Смузи-боул с ягодами без мёда', en:'Berry smoothie bowl, no honey', es:'Bowl de batido de bayas sin miel'},{ru:'Овощной омлет с зеленью', en:'Vegetable omelet with herbs', es:'Tortilla de verduras con hierbas'},{ru:'Овсянка с орехами без сахара', en:'Sugar-free oatmeal with nuts', es:'Avena sin azúcar con nueces'}],
+       l:[{ru:'Запечённая рыба с листовым салатом', en:'Baked fish with leafy salad', es:'Pescado al horno con ensalada de hojas verdes'},{ru:'Рыба на пару с овощами', en:'Steamed fish with vegetables', es:'Pescado al vapor con verduras'},{ru:'Индейка с киноа и овощами', en:'Turkey with quinoa and vegetables', es:'Pavo con quinoa y verduras'}],
+       d:[{ru:'Овощное рагу с оливковым маслом', en:'Vegetable stew with olive oil', es:'Guiso de verduras con aceite de oliva'},{ru:'Тушёная индейка с брокколи', en:'Stewed turkey with broccoli', es:'Pavo guisado con brócoli'},{ru:'Запечённая треска с зеленью', en:'Baked cod with greens', es:'Bacalao al horno con verduras verdes'}]}
+    ]
+  },
+  grainfree:{
+    name:{ru:'Беззлаковая', en:'Grain-free', es:'Sin cereales'},
+    desc:{ru:'Без круп и злаковых культур', en:'No grains or cereals', es:'Sin cereales ni granos'},
+    days:[
+      {b:[{ru:'Омлет с овощами и авокадо', en:'Vegetable and avocado omelet', es:'Tortilla con verduras y aguacate'},{ru:'Яйца пашот с авокадо', en:'Poached eggs with avocado', es:'Huevos escalfados con aguacate'},{ru:'Творожная запеканка без муки', en:'Flourless cottage-cheese bake', es:'Cazuela de requesón sin harina'}],
+       l:[{ru:'Курица гриль с овощным салатом', en:'Grilled chicken with vegetable salad', es:'Pollo a la parrilla con ensalada de verduras'},{ru:'Салат с курицей и орехами', en:'Chicken and walnut salad', es:'Ensalada de pollo y nueces'},{ru:'Куриный суп с цукини', en:'Chicken zucchini soup', es:'Sopa de pollo con calabacín'}],
+       d:[{ru:'Стейк с печёными овощами', en:'Steak with roasted vegetables', es:'Bistec con verduras asadas'},{ru:'Запечённая индейка с овощами', en:'Baked turkey with vegetables', es:'Pavo al horno con verduras'},{ru:'Баранина с баклажанами', en:'Lamb with eggplant', es:'Cordero con berenjena'}]},
+      {b:[{ru:'Творог с ягодами и орехами', en:'Cottage cheese with berries and nuts', es:'Requesón con bayas y nueces'},{ru:'Смузи с ягодами и миндальным молоком', en:'Berry almond-milk smoothie', es:'Batido de bayas con leche de almendra'},{ru:'Яичница с овощами', en:'Eggs with vegetables', es:'Huevos con verduras'}],
+       l:[{ru:'Тыквенный суп-пюре с курицей', en:'Pumpkin soup with chicken', es:'Crema de calabaza con pollo'},{ru:'Куриный суп с овощами без круп', en:'Grain-free chicken vegetable soup', es:'Sopa de pollo con verduras sin cereales'},{ru:'Салат с курицей и авокадо', en:'Chicken avocado salad', es:'Ensalada de pollo y aguacate'}],
+       d:[{ru:'Запечённый лосось с цукини', en:'Baked salmon with zucchini', es:'Salmón al horno con calabacín'},{ru:'Свиные котлеты с цукини', en:'Pork patties with zucchini', es:'Hamburguesas de cerdo con calabacín'},{ru:'Утка с овощами гриль', en:'Duck with grilled vegetables', es:'Pato con verduras a la parrilla'}]},
+      {b:[{ru:'Смузи с бананом и миндальным молоком', en:'Banana smoothie with almond milk', es:'Batido de plátano con leche de almendra'},{ru:'Овощная фриттата с сыром', en:'Vegetable frittata with cheese', es:'Frittata de verduras con queso'},{ru:'Смузи с ягодами и кокосовым молоком', en:'Berry coconut-milk smoothie', es:'Batido de bayas con leche de coco'}],
+       l:[{ru:'Салат с индейкой, авокадо и орехами', en:'Turkey, avocado and walnut salad', es:'Ensalada de pavo, aguacate y nueces'},{ru:'Салат Нисуаз с тунцом', en:'Niçoise salad with tuna', es:'Ensalada Niçoise con atún'},{ru:'Говяжий суп с овощами', en:'Beef vegetable soup', es:'Sopa de res con verduras'}],
+       d:[{ru:'Свиная вырезка с тушёными овощами', en:'Pork tenderloin with stewed vegetables', es:'Lomo de cerdo con verduras guisadas'},{ru:'Курица с баклажанами', en:'Chicken with eggplant', es:'Pollo con berenjena'},{ru:'Свиные рёбрышки с овощами', en:'Pork ribs with vegetables', es:'Costillas de cerdo con verduras'}]},
+      {b:[{ru:'Яйца пашот с овощами', en:'Poached eggs with vegetables', es:'Huevos escalfados con verduras'},{ru:'Творог с орехами', en:'Cottage cheese with nuts', es:'Requesón con nueces'},{ru:'Омлет с беконом и авокадо', en:'Bacon avocado omelet', es:'Tortilla con tocino y aguacate'}],
+       l:[{ru:'Куриный суп без круп, с овощами', en:'Grain-free chicken soup with vegetables', es:'Sopa de pollo sin cereales, con verduras'},{ru:'Говяжий бульон с овощами', en:'Beef broth with vegetables', es:'Caldo de res con verduras'},{ru:'Салат с тунцом и орехами', en:'Tuna walnut salad', es:'Ensalada de atún y nueces'}],
+       d:[{ru:'Говяжьи котлеты с брокколи', en:'Beef patties with broccoli', es:'Hamburguesas de res con brócoli'},{ru:'Тунец с овощами гриль', en:'Tuna with grilled vegetables', es:'Atún con verduras a la parrilla'},{ru:'Курица с цукини и чесноком', en:'Chicken with zucchini and garlic', es:'Pollo con calabacín y ajo'}]},
+      {b:[{ru:'Кокосовые оладьи с ягодами', en:'Coconut-flour pancakes with berries', es:'Panqueques de harina de coco con bayas'},{ru:'Миндальные оладьи с ягодами', en:'Almond-flour fritters with berries', es:'Tortitas de almendra con bayas'},{ru:'Творог с орехами и мёдом', en:'Cottage cheese with nuts and honey', es:'Requesón con nueces y miel'}],
+       l:[{ru:'Салат Нисуаз без картофеля', en:'Niçoise salad without potato', es:'Ensalada Niçoise sin patata'},{ru:'Салат с уткой и орехами', en:'Duck and walnut salad', es:'Ensalada de pato y nueces'},{ru:'Индейка с овощами гриль', en:'Turkey with grilled vegetables', es:'Pavo con verduras a la parrilla'}],
+       d:[{ru:'Запечённая утка с овощами', en:'Roasted duck with vegetables', es:'Pato asado con verduras'},{ru:'Баранина с овощами', en:'Lamb with vegetables', es:'Cordero con verduras'},{ru:'Тунец с авокадо', en:'Tuna with avocado', es:'Atún con aguacate'}]},
+      {b:[{ru:'Овощная фриттата', en:'Vegetable frittata', es:'Frittata de verduras'},{ru:'Омлет с грибами', en:'Mushroom omelet', es:'Tortilla con champiñones'},{ru:'Яйца пашот с беконом', en:'Poached eggs with bacon', es:'Huevos escalfados con tocino'}],
+       l:[{ru:'Куриные бёдра с цветной капустой', en:'Chicken thighs with cauliflower', es:'Muslos de pollo con coliflor'},{ru:'Курица с цветной капустой', en:'Chicken with cauliflower', es:'Pollo con coliflor'},{ru:'Куриный салат с орехами', en:'Chicken walnut salad', es:'Ensalada de pollo y nueces'}],
+       d:[{ru:'Тунец на гриле с салатом', en:'Grilled tuna with salad', es:'Atún a la parrilla con ensalada'},{ru:'Стейк из тунца с овощами', en:'Tuna steak with vegetables', es:'Filete de atún con verduras'},{ru:'Свиная вырезка с овощами гриль', en:'Pork tenderloin with grilled vegetables', es:'Lomo de cerdo con verduras a la parrilla'}]},
+      {b:[{ru:'Миндальные блины с ягодами', en:'Almond-flour pancakes with berries', es:'Panqueques de harina de almendra con bayas'},{ru:'Кокосовые блины с ягодами', en:'Coconut-flour pancakes with berries', es:'Panqueques de coco con bayas'},{ru:'Кокосовый йогурт с ягодами', en:'Coconut yogurt with berries', es:'Yogur de coco con bayas'}],
+       l:[{ru:'Запечённая баранина с овощами', en:'Roasted lamb with vegetables', es:'Cordero asado con verduras'},{ru:'Куриный суп с цукини', en:'Chicken zucchini soup', es:'Sopa de pollo con calabacín'},{ru:'Салат с уткой и авокадо', en:'Duck avocado salad', es:'Ensalada de pato y aguacate'}],
+       d:[{ru:'Крем-суп из цветной капусты', en:'Cauliflower cream soup', es:'Crema de coliflor'},{ru:'Крем-суп из брокколи', en:'Cream of broccoli soup', es:'Crema de brócoli'},{ru:'Баранина с цветной капустой', en:'Lamb with cauliflower', es:'Cordero con coliflor'}]}
+    ]
+  },
+  newdiet:{
+    name:{ru:'Новая диета', en:'New diet', es:'Nueva dieta'},
+    desc:{ru:'Веганское питание без продуктов животного происхождения', en:'Vegan, plant-based meals with no animal products', es:'Vegana, sin productos de origen animal'},
+    days:[
+      {b:[{ru:'Овсянка на растительном молоке с бананом и грецкими орехами', en:'Oatmeal with plant milk, banana and walnuts', es:'Avena con leche vegetal, plátano y nueces'},{ru:'Тосты с хумусом и авокадо', en:'Hummus and avocado toast', es:'Tostada de hummus y aguacate'}],
+       l:[{ru:'Тофу с рисом и брокколи в соевом соусе', en:'Tofu with rice and broccoli in soy sauce', es:'Tofu con arroz y brócoli en salsa de soja'},{ru:'Чечевичный суп с морковью и луком', en:'Lentil soup with carrot and onion', es:'Sopa de lentejas con zanahoria y cebolla'}],
+       d:[{ru:'Гречка с грибами и луком', en:'Buckwheat with mushrooms and onion', es:'Trigo sarraceno con champiñones y cebolla'},{ru:'Салат с нутом, огурцом и оливковым маслом', en:'Chickpea and cucumber salad with olive oil', es:'Ensalada de garbanzos y pepino con aceite de oliva'}]},
+      {b:[{ru:'Смузи с бананом, клубникой и растительным молоком', en:'Banana-strawberry smoothie with plant milk', es:'Batido de plátano, fresa y leche vegetal'},{ru:'Пшённая каша с черносливом', en:'Millet porridge with prunes', es:'Papilla de mijo con ciruelas pasas'}],
+       l:[{ru:'Рис с фасолью, томатами и кукурузой', en:'Rice with beans, tomato and corn', es:'Arroz con frijoles, tomate y maíz'},{ru:'Тофу гриль с цветной капустой', en:'Grilled tofu with cauliflower', es:'Tofu a la parrilla con coliflor'}],
+       d:[{ru:'Кабачки, запечённые с чесноком', en:'Baked zucchini with garlic', es:'Calabacín al horno con ajo'},{ru:'Суп-пюре из свёклы', en:'Beet cream soup', es:'Crema de remolacha'}]},
+      {b:[{ru:'Оладьи из льняной муки с ягодами', en:'Flaxseed-flour pancakes with berries', es:'Tortitas de harina de lino con bayas'},{ru:'Тофу-скрэмбл с помидорами', en:'Tofu scramble with tomatoes', es:'Revuelto de tofu con tomate'}],
+       l:[{ru:'Нут с квашеной капустой и овощами', en:'Chickpeas with sauerkraut and vegetables', es:'Garbanzos con chucrut y verduras'},{ru:'Плов с нутом и морковью', en:'Chickpea and carrot pilaf', es:'Pilaf de garbanzos y zanahoria'}],
+       d:[{ru:'Тофу с кукурузой и болгарским перцем', en:'Tofu with corn and bell pepper', es:'Tofu con maíz y pimiento'},{ru:'Овощное рагу с грибами', en:'Vegetable and mushroom stew', es:'Guiso de verduras y champiñones'}]},
+      {b:[{ru:'Блины из рисовой муки с какао и бананом', en:'Rice-flour pancakes with cocoa and banana', es:'Panqueques de harina de arroz con cacao y plátano'},{ru:'Гречневая каша с яблоком', en:'Buckwheat porridge with apple', es:'Papilla de trigo sarraceno con manzana'}],
+       l:[{ru:'Чечевица с шампиньонами и зелёной гречкой', en:'Lentils with mushrooms and green buckwheat', es:'Lentejas con champiñones y trigo sarraceno verde'},{ru:'Ризотто из пшена со шпинатом', en:'Millet risotto with spinach', es:'Risotto de mijo con espinaca'}],
+       d:[{ru:'Салат из редиса, огурца и зелени с кунжутным маслом', en:'Radish, cucumber and herb salad with sesame oil', es:'Ensalada de rábano, pepino y hierbas con aceite de sésamo'},{ru:'Фаршированный кабачок с тофу', en:'Tofu-stuffed zucchini', es:'Calabacín relleno de tofu'}]},
+      {b:[{ru:'Шоколадные тофу-битки с черносливом', en:'Chocolate tofu bites with prunes', es:'Bocaditos de tofu y chocolate con ciruelas'},{ru:'Овсяная каша с ягодами и кокосовой стружкой', en:'Oatmeal with berries and coconut flakes', es:'Avena con bayas y coco rallado'}],
+       l:[{ru:'Овощная запеканка с чечевицей', en:'Vegetable and lentil bake', es:'Pastel de verduras y lentejas'},{ru:'Боул с нутом, рукколой и авокадо', en:'Chickpea bowl with arugula and avocado', es:'Bowl de garbanzos con rúcula y aguacate'}],
+       d:[{ru:'Рагу из кабачков и грибов', en:'Zucchini and mushroom stew', es:'Guiso de calabacín y champiñones'},{ru:'Тёплый салат с тофу и кукурузой', en:'Warm tofu and corn salad', es:'Ensalada tibia de tofu y maíz'}]},
+      {b:[{ru:'Смузи с зелёной гречкой, клубникой и авокадо', en:'Green buckwheat, strawberry and avocado smoothie', es:'Batido de trigo sarraceno verde, fresa y aguacate'},{ru:'Тосты с авокадо и семечками', en:'Avocado toast with seeds', es:'Tostada de aguacate con semillas'}],
+       l:[{ru:'Рис с тофу, болгарским перцем и фасолью', en:'Rice with tofu, bell pepper and beans', es:'Arroz con tofu, pimiento y frijoles'},{ru:'Плов с нутом, зирой и барбарисом', en:'Chickpea pilaf with cumin and barberry', es:'Pilaf de garbanzos con comino y agracejo'}],
+       d:[{ru:'Овощи с нутом на пару', en:'Steamed vegetables with chickpeas', es:'Verduras al vapor con garbanzos'},{ru:'Салат со свёклой, фасолью и грецким орехом', en:'Beet, bean and walnut salad', es:'Ensalada de remolacha, frijoles y nueces'}]},
+      {b:[{ru:'Пшённая каша с тофу и зеленью', en:'Millet porridge with tofu and herbs', es:'Papilla de mijo con tofu y hierbas'},{ru:'Смузи-боул с ягодами и семенами чиа', en:'Berry smoothie bowl with chia seeds', es:'Bowl de batido de bayas con semillas de chía'}],
+       l:[{ru:'Томатный суп с фасолью и хлебом', en:'Tomato and bean soup with bread', es:'Sopa de tomate y frijoles con pan'},{ru:'Гречка с овощами и кунжутом', en:'Buckwheat with vegetables and sesame', es:'Trigo sarraceno con verduras y sésamo'}],
+       d:[{ru:'Свекольный салат с тофу и оливками', en:'Beet salad with tofu and olives', es:'Ensalada de remolacha con tofu y aceitunas'},{ru:'Печёные овощи с хумусом', en:'Roasted vegetables with hummus', es:'Verduras asadas con hummus'}]}
+    ]
+  }
+};
+
+const ARTICLES = [
+  {title:{ru:'Витамин D и как его получать зимой', en:'Vitamin D and how to get it in winter', es:'La vitamina D y cómo obtenerla en invierno'},
+   body:{ru:'Витамин D помогает организму усваивать кальций и поддерживает работу иммунной системы. Основной источник — солнечный свет: кожа синтезирует витамин D при контакте с ультрафиолетом. Зимой и в пасмурных регионах его выработка снижается, поэтому стоит чаще включать в рацион жирную рыбу (лосось, скумбрию), яичный желток и обогащённые продукты. При длительном недостатке солнца врач может порекомендовать добавки — но дозировку лучше подбирать после анализа крови, а не наугад.',
+        en:'Vitamin D helps the body absorb calcium and supports the immune system. The main source is sunlight — skin produces it on contact with UV rays. In winter or cloudy regions, production drops, so it helps to eat more fatty fish (salmon, mackerel), egg yolks, and fortified foods. If sun exposure stays low for a long time, a doctor may suggest a supplement — but the right dose is best chosen after a blood test, not guessed.',
+        es:'La vitamina D ayuda al cuerpo a absorber calcio y sostiene el sistema inmunitario. Su fuente principal es la luz solar: la piel la produce al contacto con los rayos UV. En invierno o en zonas nubladas, la producción baja, así que conviene comer más pescado graso (salmón, caballa), yema de huevo y alimentos fortificados. Si la falta de sol se prolonga, un médico puede sugerir un suplemento, pero la dosis conviene elegirla tras un análisis de sangre, no al azar.'}},
+  {title:{ru:'Омега-3: зачем нужны жирные кислоты', en:'Omega-3: why these fatty acids matter', es:'Omega-3: para qué sirven estos ácidos grasos'},
+   body:{ru:'Омега-3 — это незаменимые жирные кислоты, которые организм не может производить сам. Они участвуют в работе мозга и сердца, снижают воспаление. Больше всего омега-3 в жирной рыбе — лососе, скумбрии, сардинах, а также в льняном семени, грецких орехах и семенах чиа. Если рыба редко бывает в рационе, можно рассмотреть добавки с рыбьим жиром или водорослевым маслом (для тех, кто не ест рыбу). Как и с любыми добавками, лучше обсудить дозировку со специалистом.',
+        en:"Omega-3s are essential fatty acids the body can't make on its own. They support brain and heart function and help reduce inflammation. The richest sources are fatty fish — salmon, mackerel, sardines — plus flaxseed, walnuts and chia seeds. If fish rarely makes it onto the plate, fish-oil or algae-oil supplements (for those who don't eat fish) are worth considering. As with any supplement, it's best to check the dose with a specialist.",
+        es:'Los omega-3 son ácidos grasos esenciales que el cuerpo no puede fabricar por sí mismo. Favorecen el cerebro y el corazón, y ayudan a reducir la inflamación. Las mejores fuentes son el pescado graso —salmón, caballa, sardinas— además de la linaza, las nueces y las semillas de chía. Si el pescado aparece poco en la dieta, vale la pena considerar suplementos de aceite de pescado o de algas (para quienes no comen pescado). Como con cualquier suplemento, conviene consultar la dosis con un especialista.'}},
+  {title:{ru:'Что такое гликемический индекс', en:'What the glycemic index actually means', es:'Qué es el índice glucémico'},
+   body:{ru:'Гликемический индекс (ГИ) показывает, как быстро продукт повышает уровень сахара в крови. Продукты с высоким ГИ — белый хлеб, сладости, сладкие напитки — вызывают резкий скачок сахара и такое же резкое падение, из-за чего быстро возвращается чувство голода. Продукты с низким ГИ — овощи, бобовые, цельные злаки — усваиваются медленнее и дают более стабильную энергию. Именно поэтому низкогликемический подход часто рекомендуют при проблемах с кожей, диабете и просто для более ровного самочувствия в течение дня.',
+        en:"The glycemic index (GI) shows how quickly a food raises blood sugar. High-GI foods — white bread, sweets, sugary drinks — cause a sharp spike followed by an equally sharp drop, which brings hunger back fast. Low-GI foods — vegetables, legumes, whole grains — digest more slowly and give steadier energy. That's why a low-glycemic approach is often recommended for skin issues, diabetes, and simply for feeling more even throughout the day.",
+        es:'El índice glucémico (IG) indica qué tan rápido un alimento eleva el azúcar en sangre. Los alimentos con IG alto —pan blanco, dulces, bebidas azucaradas— provocan un pico brusco seguido de una caída igual de brusca, lo que trae el hambre de vuelta rápido. Los de IG bajo —verduras, legumbres, cereales integrales— se digieren más despacio y dan energía más estable. Por eso el enfoque bajo en glucemia suele recomendarse para problemas de piel, diabetes y, en general, para sentirse más estable durante el día.'}},
+  {title:{ru:'Кето-диета: плюсы и ограничения', en:'The keto diet: benefits and limits', es:'La dieta keto: beneficios y límites'},
+   body:{ru:'Кето-диета строится на резком сокращении углеводов и увеличении жиров — организм переходит в режим кетоза и начинает использовать жир как основной источник энергии. Она может помочь быстро снизить вес и стабилизировать уровень сахара у некоторых людей. Но у неё есть ограничения: сложно соблюдать долго, может не хватать клетчатки и некоторых витаминов, а резкий вход в кетоз иногда сопровождается усталостью и головной болью («кето-грипп»). Перед началом стоит проконсультироваться с врачом, особенно при хронических заболеваниях.',
+        en:'The keto diet sharply cuts carbs and raises fat, pushing the body into ketosis, where fat becomes the main fuel source. It can help some people lose weight quickly and stabilize blood sugar. But it has limits: it\'s hard to sustain long-term, can fall short on fiber and certain vitamins, and the initial shift into ketosis sometimes brings fatigue and headaches (the "keto flu"). It\'s worth checking with a doctor before starting, especially with chronic conditions.',
+        es:'La dieta keto reduce drásticamente los carbohidratos y aumenta las grasas, llevando al cuerpo a la cetosis, donde la grasa se convierte en la principal fuente de energía. Puede ayudar a algunas personas a bajar de peso rápido y estabilizar el azúcar en sangre. Pero tiene límites: es difícil de mantener a largo plazo, puede faltar fibra y ciertas vitaminas, y el paso inicial a la cetosis a veces trae cansancio y dolor de cabeza (la "gripe keto"). Conviene consultar a un médico antes de empezar, sobre todo con enfermedades crónicas.'}},
+  {title:{ru:'Средиземноморская диета: почему её считают одной из самых полезных', en:"The Mediterranean diet: why it's considered one of the healthiest", es:'La dieta mediterránea: por qué se la considera una de las más saludables'},
+   body:{ru:'Средиземноморская диета основана на традиционном рационе жителей стран у Средиземного моря: много овощей, фруктов, бобовых, оливкового масла, умеренно рыбы и совсем немного красного мяса и сахара. Исследования связывают такой стиль питания со снижением риска сердечно-сосудистых заболеваний и более долгой активной жизнью. Её удобно соблюдать долго именно потому, что она не строится на строгих запретах, а скорее смещает баланс в сторону растительной пищи и полезных жиров.',
+        en:"The Mediterranean diet reflects the traditional eating patterns of people living around the Mediterranean Sea: plenty of vegetables, fruit, legumes and olive oil, moderate fish, and very little red meat or sugar. Research links this pattern with lower cardiovascular risk and longer, more active years. It's easy to sustain long-term precisely because it isn't built on strict bans — it just shifts the balance toward plants and healthy fats.",
+        es:'La dieta mediterránea refleja el patrón alimentario tradicional de los pueblos que viven junto al mar Mediterráneo: muchas verduras, frutas, legumbres y aceite de oliva, pescado con moderación, y muy poca carne roja o azúcar. Los estudios la relacionan con menor riesgo cardiovascular y una vida activa más larga. Es fácil de mantener en el tiempo precisamente porque no se basa en prohibiciones estrictas, sino en desplazar el equilibrio hacia las plantas y las grasas saludables.'}},
+  {title:{ru:'Беззлаковое питание: когда оно действительно нужно', en:"Grain-free eating: when it's actually necessary", es:'Alimentación sin cereales: cuándo es realmente necesaria'},
+   body:{ru:'Отказ от злаков имеет смысл при подтверждённой непереносимости глютена, целиакии или индивидуальной реакции на конкретные крупы — тогда это не тренд, а необходимость. Для остальных людей цельные злаки (гречка, овёс, бурый рис) — хороший источник клетчатки, витаминов группы B и медленных углеводов, и полностью убирать их без веской причины не обязательно. Если вы всё же выбираете беззлаковый рацион, важно заменить клетчатку и микроэлементы за счёт овощей, бобовых и орехов, чтобы питание оставалось разнообразным.',
+        en:"Cutting out grains makes real sense with confirmed gluten intolerance, celiac disease, or a specific reaction to certain grains — there it's a necessity, not a trend. For everyone else, whole grains (buckwheat, oats, brown rice) are a solid source of fiber, B vitamins and slow carbs, and dropping them entirely without a clear reason isn't necessary. If you do go grain-free, it's worth replacing that fiber and those nutrients with vegetables, legumes and nuts so the diet stays varied.",
+        es:'Eliminar los cereales tiene sentido real con intolerancia al gluten confirmada, celiaquía o una reacción específica a ciertos granos: ahí es una necesidad, no una moda. Para el resto, los cereales integrales (trigo sarraceno, avena, arroz integral) son una buena fuente de fibra, vitaminas del grupo B y carbohidratos de absorción lenta, y no es necesario eliminarlos del todo sin un motivo claro. Si aun así optas por una dieta sin cereales, conviene reponer esa fibra y esos nutrientes con verduras, legumbres y frutos secos para que la alimentación siga siendo variada.'}}
+];
+
+const MEAL_KEYS = ['b','l','d'];
+const CALORIE_RANGES = {
+  balanced:{b:[320,430], l:[480,600], d:[420,540]},
+  vegetarian:{b:[300,400], l:[420,540], d:[380,500]},
+  keto:{b:[380,480], l:[520,640], d:[480,600]},
+  mediterranean:{b:[280,380], l:[420,540], d:[400,520]},
+  acne:{b:[280,370], l:[400,500], d:[380,480]},
+  grainfree:{b:[320,420], l:[450,570], d:[420,540]},
+  newdiet:{b:[280,380], l:[420,540], d:[380,480]}
+};
+function hashStr(s){
+  let h = 0;
+  for(let i=0;i<s.length;i++){ h = (h*31 + s.charCodeAt(i)) >>> 0; }
+  return h;
+}
+function getCalories(diet, meal, text){
+  const range = (CALORIE_RANGES[diet] && CALORIE_RANGES[diet][meal]) || [350,550];
+  const span = range[1]-range[0];
+  const val = range[0] + (hashStr(text) % (span+1));
+  return Math.round(val/10)*10;
+}
+const DEFAULT_TIMES = {b:'10:00', l:'15:00', d:'20:00'};
+
+const HOW_LABEL = {ru:'Как готовить:', en:'How to cook:', es:'Cómo prepararlo:'};
+
+const COOKING_METHODS = [
+  {kw:{ru:['смузи'], en:['smoothie'], es:['batido']},
+   ru:'Сложите все ингредиенты в блендер и взбейте до однородности.',
+   en:'Put all the ingredients in a blender and blend until smooth.',
+   es:'Pon todos los ingredientes en la batidora y licúa hasta que quede homogéneo.'},
+  {kw:{ru:['пудинг'], en:['pudding'], es:['pudín']},
+   ru:'Смешайте семена с жидкостью и уберите в холодильник минимум на 2 часа или на ночь.',
+   en:'Mix the seeds with the liquid and refrigerate for at least 2 hours or overnight.',
+   es:'Mezcla las semillas con el líquido y refrigera al menos 2 horas o toda la noche.'},
+  {kw:{ru:['яйца пашот','яйцом пашот'], en:['poached egg'], es:['huevo escalfado','huevos escalfados']},
+   ru:'Доведите воду до слабого кипения, добавьте немного уксуса и варите яйцо 3 минуты.',
+   en:'Bring water to a gentle simmer, add a splash of vinegar and poach the egg for 3 minutes.',
+   es:'Lleva el agua a hervor suave, añade un chorrito de vinagre y escalfa el huevo 3 minutos.'},
+  {kw:{ru:['маффины','яичные кексы'], en:['egg muffin'], es:['muffin de huevo']},
+   ru:'Взбейте яйца с начинкой, разлейте по формочкам и запекайте при 180°C 15–18 минут.',
+   en:'Whisk the eggs with the filling, pour into a muffin tin and bake at 180°C for 15–18 minutes.',
+   es:'Bate los huevos con el relleno, vierte en moldes y hornea a 180°C 15–18 minutos.'},
+  {kw:{ru:['яйца варёные','яйцо варёное'], en:['boiled egg'], es:['huevo cocido','huevos cocidos']},
+   ru:'Варите яйца в кипящей воде 8–10 минут, затем остудите в холодной воде и очистите.',
+   en:'Boil the eggs for 8–10 minutes, then cool them in cold water and peel.',
+   es:'Hierve los huevos 8–10 minutos, enfríalos en agua fría y pélalos.'},
+  {kw:{ru:['омлет','яичниц','фриттата'], en:['omelet','omelette','frittata','eggs with'], es:['tortilla con','tortilla de','frittata']},
+   ru:'Взбейте яйца, вылейте на разогретую сковороду с начинкой и готовьте на среднем огне 5–7 минут.',
+   en:'Whisk the eggs, pour into a hot pan with the filling and cook over medium heat for 5–7 minutes.',
+   es:'Bate los huevos, viértelos en la sartén caliente con el relleno y cocina a fuego medio 5–7 minutos.'},
+  {kw:{ru:['запеканк'], en:['casserole','bake'], es:['cazuela']},
+   ru:'Смешайте ингредиенты, выложите в форму для запекания и готовьте при 180°C 25–30 минут.',
+   en:'Mix the ingredients, transfer to a baking dish and bake at 180°C for 25–30 minutes.',
+   es:'Mezcla los ingredientes, colócalos en una fuente para horno y hornea a 180°C 25–30 minutos.'},
+  {kw:{ru:['лазанья'], en:['lasagna'], es:['lasaña']},
+   ru:'Соберите слоями с соусом и сыром, запекайте при 190°C 35–40 минут.',
+   en:'Layer with the sauce and cheese, then bake at 190°C for 35–40 minutes.',
+   es:'Monta en capas con la salsa y el queso, y hornea a 190°C 35–40 minutos.'},
+  {kw:{ru:['ризотто'], en:['risotto'], es:['risotto']},
+   ru:'Обжарьте рис, вливайте горячий бульон постепенно, помешивая, 18–20 минут до кремовой текстуры.',
+   en:'Toast the rice, then gradually add hot broth while stirring for 18–20 minutes until creamy.',
+   es:'Sofríe el arroz y añade caldo caliente poco a poco, removiendo, 18–20 minutos hasta que quede cremoso.'},
+  {kw:{ru:['плов'], en:['pilaf'], es:['pilaf']},
+   ru:'Обжарьте овощи, добавьте рис и бульон, накройте крышкой и тушите 25 минут.',
+   en:'Sauté the vegetables, add rice and broth, cover and simmer for 25 minutes.',
+   es:'Sofríe las verduras, añade arroz y caldo, tapa y cocina 25 minutos.'},
+  {kw:{ru:['карри'], en:['curry'], es:['curry']},
+   ru:'Обжарьте специи с овощами, добавьте остальные ингредиенты и тушите 15–20 минут.',
+   en:'Sauté the spices with the vegetables, add the rest and simmer for 15–20 minutes.',
+   es:'Sofríe las especias con las verduras, añade el resto y cocina 15–20 minutos.'},
+  {kw:{ru:['оладьи','блины','панкейки'], en:['pancake'], es:['panqueque','tortita']},
+   ru:'Замесите тесто, обжарьте порциями на сковороде по 2–3 минуты с каждой стороны.',
+   en:'Mix the batter and fry in batches, 2–3 minutes per side.',
+   es:'Mezcla la masa y fríela en tandas, 2–3 minutos por cada lado.'},
+  {kw:{ru:['тосты'], en:['toast'], es:['tostada']},
+   ru:'Обжарьте хлеб до золотистой корочки и выложите сверху начинку.',
+   en:'Toast the bread until golden and top with the filling.',
+   es:'Tuesta el pan hasta que esté dorado y cúbrelo con el relleno.'},
+  {kw:{ru:['шакшук'], en:['shakshuka'], es:['shakshuka']},
+   ru:'Потушите томатный соус со специями, разбейте яйца сверху и готовьте под крышкой 8–10 минут.',
+   en:'Simmer the tomato sauce with spices, crack the eggs on top and cook covered for 8–10 minutes.',
+   es:'Cocina la salsa de tomate con especias, casca los huevos encima y cocina tapado 8–10 minutos.'},
+  {kw:{ru:['фарширован'], en:['stuffed'], es:['relleno','rellenas','rellenos']},
+   ru:'Начините овощи или листья начинкой и запекайте либо тушите 25–30 минут.',
+   en:'Fill the vegetables or leaves with the stuffing and bake or simmer for 25–30 minutes.',
+   es:'Rellena las verduras u hojas y hornea o cocina 25–30 minutos.'},
+  {kw:{ru:['крем-суп','суп-пюре'], en:['cream of','cream soup'], es:['crema de']},
+   ru:'Отварите овощи в бульоне 20 минут, затем взбейте блендером до однородности.',
+   en:'Simmer the vegetables in broth for 20 minutes, then blend until smooth.',
+   es:'Cuece las verduras en caldo 20 minutos y licúa hasta que quede cremoso.'},
+  {kw:{ru:['бульон'], en:['broth'], es:['caldo']},
+   ru:'Варите мясо и овощи в воде на медленном огне 30–40 минут.',
+   en:'Simmer the meat and vegetables in water over low heat for 30–40 minutes.',
+   es:'Cuece la carne y las verduras en agua a fuego lento 30–40 minutos.'},
+  {kw:{ru:['суп'], en:['soup'], es:['sopa']},
+   ru:'Отварите овощи и мясо или рыбу в бульоне 20–25 минут до готовности.',
+   en:'Simmer the vegetables with the meat or fish in broth for 20–25 minutes until done.',
+   es:'Cuece las verduras con la carne o el pescado en caldo 20–25 minutos hasta que esté listo.'},
+  {kw:{ru:['кускус'], en:['couscous'], es:['cuscús']},
+   ru:'Залейте кускус кипятком, накройте крышкой и оставьте на 5–10 минут.',
+   en:'Pour boiling water over the couscous, cover and let stand for 5–10 minutes.',
+   es:'Vierte agua hirviendo sobre el cuscús, tapa y deja reposar 5–10 minutos.'},
+  {kw:{ru:['фалафел'], en:['falafel'], es:['falafel']},
+   ru:'Сформируйте шарики и обжарьте до золотистой корочки на среднем огне.',
+   en:'Shape into balls and fry until golden over medium heat.',
+   es:'Forma bolitas y fríelas hasta que estén doradas a fuego medio.'},
+  {kw:{ru:['тако'], en:['taco'], es:['taco']},
+   ru:'Обжарьте начинку 8–10 минут и разложите по тортильям вместе с овощами.',
+   en:'Cook the filling for 8–10 minutes and fill the tortillas with it and the vegetables.',
+   es:'Cocina el relleno 8–10 minutos y rellena las tortillas con él y las verduras.'},
+  {kw:{ru:['хумус'], en:['hummus'], es:['hummus']},
+   ru:'Подавайте готовый хумус с нарезанными свежими овощами.',
+   en:'Serve the hummus with freshly cut vegetables.',
+   es:'Sirve el hummus con verduras frescas cortadas.'},
+  {kw:{ru:['на пару'], en:['steamed'], es:['al vapor']},
+   ru:'Готовьте на пару под крышкой 10–15 минут до мягкости.',
+   en:'Steam covered for 10–15 minutes until tender.',
+   es:'Cocina al vapor tapado 10–15 minutos hasta que esté tierno.'},
+  {kw:{ru:['гриль'], en:['grilled'], es:['a la parrilla']},
+   ru:'Обжарьте на гриле или сковороде-гриль 5–7 минут с каждой стороны.',
+   en:'Grill or pan-grill for 5–7 minutes on each side.',
+   es:'Cocina a la parrilla 5–7 minutos por cada lado.'},
+  {kw:{ru:['запечённ','запечь','запекайте'], en:['baked','roasted'], es:['al horno','asado','asada']},
+   ru:'Запекайте в духовке при 190–200°C 20–25 минут до готовности.',
+   en:'Bake in the oven at 190–200°C for 20–25 minutes until cooked through.',
+   es:'Hornea a 190–200°C durante 20–25 minutos hasta que esté hecho.'},
+  {kw:{ru:['тушён','рагу','гуляш','тушеная','тушёная'], en:['stewed','braised','stew'], es:['guisad','estofad']},
+   ru:'Обжарьте ингредиенты, накройте крышкой и тушите на медленном огне 30–40 минут.',
+   en:'Sear the ingredients, cover and simmer over low heat for 30–40 minutes.',
+   es:'Sella los ingredientes, tapa y cocina a fuego lento 30–40 minutos.'},
+  {kw:{ru:['котлет','фрикадельк','стейк','бёдра','крылышки','вырезка','отбивн','рёбр'], en:['steak','patties','meatball','chop','wings','ribs','tenderloin'], es:['bistec','albóndiga','chuleta','alitas','costillas','lomo']},
+   ru:'Обжарьте на сковороде 3–5 минут с каждой стороны до полной готовности.',
+   en:'Pan-fry for 3–5 minutes on each side until fully cooked.',
+   es:'Fríe en la sartén 3–5 minutos por cada lado hasta que esté bien hecho.'},
+  {kw:{ru:['паста','спагетти'], en:['pasta','spaghetti'], es:['pasta','espaguetis']},
+   ru:'Отварите пасту согласно инструкции на упаковке и смешайте с соусом.',
+   en:'Cook the pasta as directed on the package and toss with the sauce.',
+   es:'Cuece la pasta según las instrucciones del paquete y mézclala con la salsa.'},
+  {kw:{ru:['салат'], en:['salad'], es:['ensalada']},
+   ru:'Нарежьте все ингредиенты и перемешайте с заправкой перед подачей.',
+   en:'Chop all the ingredients and toss with the dressing before serving.',
+   es:'Corta todos los ingredientes y mézclalos con el aliño antes de servir.'},
+  {kw:{ru:['гранола','мюсли'], en:['granola','muesli'], es:['granola','muesli']},
+   ru:'Смешайте ингредиенты в миске и подавайте сразу же.',
+   en:'Combine the ingredients in a bowl and serve right away.',
+   es:'Combina los ingredientes en un bowl y sirve de inmediato.'}
+];
+const DEFAULT_METHOD = {
+  ru:'Приготовьте основные ингредиенты удобным способом — варкой, тушением или на гриле — до готовности.',
+  en:'Cook the main ingredients your preferred way — boiling, stewing or grilling — until done.',
+  es:'Cocina los ingredientes principales como prefieras —hervidos, guisados o a la parrilla— hasta que estén listos.'
+};
+function getCookingSteps(text, lang){
+  const low = (text||'').toLowerCase();
+  for(const m of COOKING_METHODS){
+    const list = m.kw[lang] || m.kw.ru;
+    if(list.some(k => low.includes(k))) return m[lang];
+  }
+  return DEFAULT_METHOD[lang];
+}
+
+let state = {lang:'ru', diet:'balanced', day:0, overrides:{}, schedule:{}, forbidden:[], favorites:[], customDishes:[], symptoms:[], shoppingList:[], showCalories:false};
+try{
+  const saved = JSON.parse(localStorage.getItem('hive-data') || 'null');
+  if(saved && saved.lang && DAY_NAMES[saved.lang]){
+    state = Object.assign(state, saved);
+  }
+}catch(e){}
+
+function saveState(){
+  try{
+    localStorage.setItem('hive-data', JSON.stringify({
+      lang: state.lang, diet: state.diet, day: state.day, overrides: state.overrides, schedule: state.schedule
+    }));
+  }catch(e){}
+  saveProfileData();
+}
+
+function profileListKey(){ return 'hive-profiles'; }
+function profileDataKey(name){ return 'hive-profile:' + name; }
+function loadProfileList(){
+  try{
+    const list = JSON.parse(localStorage.getItem(profileListKey()) || 'null');
+    if(Array.isArray(list) && list.length) return list;
+  }catch(e){}
+  return ['Я'];
+}
+function loadActiveProfile(){
+  try{ return localStorage.getItem('hive-active-profile') || loadProfileList()[0]; }catch(e){ return 'Я'; }
+}
+let profiles = loadProfileList();
+let activeProfile = loadActiveProfile();
+if(!profiles.includes(activeProfile)) profiles.unshift(activeProfile);
+
+function loadProfileData(){
+  try{
+    const data = JSON.parse(localStorage.getItem(profileDataKey(activeProfile)) || 'null');
+    state.forbidden = (data && data.forbidden) || [];
+    state.favorites = (data && data.favorites) || [];
+    state.customDishes = (data && data.customDishes) || [];
+    state.symptoms = (data && data.symptoms) || [];
+    state.shoppingList = (data && data.shoppingList) || [];
+    state.showCalories = (data && data.showCalories) || false;
+  }catch(e){
+    state.forbidden = []; state.favorites = []; state.customDishes = []; state.symptoms = []; state.shoppingList = []; state.showCalories = false;
+  }
+}
+function saveProfileData(){
+  try{
+    localStorage.setItem(profileDataKey(activeProfile), JSON.stringify({
+      forbidden: state.forbidden, favorites: state.favorites, customDishes: state.customDishes, symptoms: state.symptoms,
+      shoppingList: state.shoppingList, showCalories: state.showCalories
+    }));
+    localStorage.setItem(profileListKey(), JSON.stringify(profiles));
+    localStorage.setItem('hive-active-profile', activeProfile);
+  }catch(e){}
+}
+loadProfileData();
+
+function renderProfileSelect(){
+  const sel = document.getElementById('profileSelect');
+  sel.innerHTML = '';
+  profiles.forEach(name=>{
+    const opt = document.createElement('option');
+    opt.value = name; opt.textContent = name;
+    if(name === activeProfile) opt.selected = true;
+    sel.appendChild(opt);
+  });
+}
+document.getElementById('profileSelect').addEventListener('change', (e)=>{
+  activeProfile = e.target.value;
+  try{ localStorage.setItem('hive-active-profile', activeProfile); }catch(err){}
+  loadProfileData();
+  render();
+});
+document.getElementById('profileAddBtn').addEventListener('click', ()=>{
+  document.getElementById('profileAddForm').style.display = 'inline-flex';
+  document.getElementById('profileAddBtn').style.display = 'none';
+  const input = document.getElementById('newProfileInput');
+  input.value = '';
+  input.focus();
+});
+function cancelNewProfile(){
+  document.getElementById('profileAddForm').style.display = 'none';
+  document.getElementById('profileAddBtn').style.display = '';
+}
+function commitNewProfile(){
+  const input = document.getElementById('newProfileInput');
+  const name = input.value.trim();
+  if(name){
+    if(!profiles.includes(name)) profiles.push(name);
+    activeProfile = name;
+    saveProfileData();
+    loadProfileData();
+    renderProfileSelect();
+    render();
+  }
+  cancelNewProfile();
+}
+document.getElementById('profileConfirmBtn').addEventListener('click', commitNewProfile);
+document.getElementById('profileCancelBtn').addEventListener('click', cancelNewProfile);
+document.getElementById('newProfileInput').addEventListener('keydown', ev=>{
+  if(ev.key === 'Enter'){ commitNewProfile(); }
+  if(ev.key === 'Escape'){ cancelNewProfile(); }
+});
+
+function mealKey(diet, day, meal){ return diet+'|'+day+'|'+meal; }
+function schedKey(day, meal){ return day+'|'+meal; }
+
+function findForbiddenMatch(variant){
+  if(!state.forbidden.length) return null;
+  const blob = ((variant.ru||'')+' '+(variant.en||'')+' '+(variant.es||'')).toLowerCase();
+  for(const term of state.forbidden){
+    if(term && blob.includes(term.toLowerCase())) return term;
+  }
+  return null;
+}
+
+function resolveMeal(diet, day, meal, variants){
+  const k = mealKey(diet, day, meal);
+  const ov = state.overrides[k];
+  if(ov && ov.text && ov.text[state.lang] !== undefined){
+    const customText = ov.text[state.lang];
+    const term = customText ? findForbiddenMatch({ru:customText, en:customText, es:customText}) : null;
+    return {text: customText, status: ov.status || null, autoNote: term ? {type:'contains', term:term} : null, idx: (ov.variant||0)};
+  }
+  const preferred = (ov && ov.variant) ? ov.variant : 0;
+  const flags = variants.map(v => findForbiddenMatch(v));
+  let idx = preferred, note = null;
+  if(flags[preferred]){
+    let found = -1;
+    for(let i=1;i<variants.length;i++){
+      const j = (preferred+i) % variants.length;
+      if(!flags[j]){ found = j; break; }
+    }
+    if(found >= 0){ idx = found; note = {type:'swapped', term:flags[preferred]}; }
+    else { idx = preferred; note = {type:'contains', term:flags[preferred]}; }
+  }
+  return {text: variants[idx][state.lang], status: ov ? (ov.status||null) : null, autoNote: note, idx: idx};
+}
+function getResolvedVariantIndex(diet, day, meal, variants){
+  return resolveMeal(diet, day, meal, variants).idx;
+}
+
+function isFavorite(variant){
+  return state.favorites.some(f => f.ru === variant.ru);
+}
+function toggleFavorite(variant, meal){
+  const i = state.favorites.findIndex(f => f.ru === variant.ru);
+  if(i >= 0){ state.favorites.splice(i,1); }
+  else { state.favorites.push({ru:variant.ru, en:variant.en, es:variant.es, meal:meal, diet:state.diet}); }
+  saveState();
+}
+
+function setMealStatus(diet, day, meal, status){
+  const k = mealKey(diet, day, meal);
+  if(!state.overrides[k]) state.overrides[k] = {};
+  state.overrides[k].status = (state.overrides[k].status === status) ? null : status;
+  saveState();
+}
+function setMealText(diet, day, meal, lang, text){
+  const k = mealKey(diet, day, meal);
+  if(!state.overrides[k]) state.overrides[k] = {};
+  if(!state.overrides[k].text) state.overrides[k].text = {};
+  state.overrides[k].text[lang] = text;
+  saveState();
+}
+function cycleVariant(diet, day, meal, count){
+  const k = mealKey(diet, day, meal);
+  if(!state.overrides[k]) state.overrides[k] = {};
+  const cur = state.overrides[k].variant || 0;
+  state.overrides[k].variant = (cur + 1) % count;
+  delete state.overrides[k].text;
+  saveState();
+}
+function getSchedule(day, meal){
+  const k = schedKey(day, meal);
+  if(!state.schedule[k]){
+    state.schedule[k] = {time: DEFAULT_TIMES[meal], reminder:false};
+  }
+  return state.schedule[k];
+}
+function setScheduleTime(day, meal, value){
+  const k = schedKey(day, meal);
+  if(!state.schedule[k]) state.schedule[k] = {time:DEFAULT_TIMES[meal], reminder:false};
+  state.schedule[k].time = value;
+  saveState();
+  armReminder(day, meal);
+}
+function toggleReminder(day, meal){
+  const k = schedKey(day, meal);
+  if(!state.schedule[k]) state.schedule[k] = {time:DEFAULT_TIMES[meal], reminder:false};
+  state.schedule[k].reminder = !state.schedule[k].reminder;
+  saveState();
+  if(state.schedule[k].reminder){
+    if(typeof Notification !== 'undefined' && Notification.permission === 'default'){
+      Notification.requestPermission().then(()=> armReminder(day, meal));
+    } else {
+      armReminder(day, meal);
+    }
+  } else {
+    disarmReminder(day, meal);
+  }
+}
+
+const timers = {};
+function disarmReminder(day, meal){
+  const k = schedKey(day, meal);
+  if(timers[k]){ clearTimeout(timers[k]); delete timers[k]; }
+}
+function armReminder(day, meal){
+  const k = schedKey(day, meal);
+  disarmReminder(k===undefined?null:day, meal);
+  const sched = state.schedule[k];
+  if(!sched || !sched.reminder || !sched.time) return;
+  if(typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
+  const [hh,mm] = sched.time.split(':').map(Number);
+  const now = new Date();
+  const target = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hh, mm, 0, 0);
+  if(target <= now) target.setDate(target.getDate()+1);
+  const ms = target - now;
+  timers[k] = setTimeout(()=>{
+    try{
+      const label = mealLabel(meal);
+      new Notification('Улей', {body: label + ' — ' + sched.time});
+    }catch(e){}
+    armReminder(day, meal);
+  }, ms);
+}
+function armAllReminders(){
+  Object.keys(state.schedule).forEach(k=>{
+    const [d,m] = k.split('|');
+    if(state.schedule[k].reminder) armReminder(parseInt(d,10), m);
+  });
+}
+
+function renderDietRow(){
+  const row = document.getElementById('dietRow');
+  row.innerHTML = '';
+  Object.keys(DIETS).forEach(key=>{
+    const d = DIETS[key];
+    const btn = document.createElement('button');
+    btn.className = 'diet-btn';
+    btn.setAttribute('aria-pressed', key===state.diet ? 'true':'false');
+    btn.innerHTML = '<span class="diet-icon">'+DIET_ICONS[key]+'</span><span><strong>'+d.name[state.lang]+'</strong><span class="d">'+d.desc[state.lang]+'</span></span>';
+    btn.addEventListener('click', ()=>{ state.diet = key; saveState(); render(); });
+    row.appendChild(btn);
+  });
+}
+
+function renderDayTabs(){
+  const tabs = document.getElementById('dayTabs');
+  tabs.innerHTML = '';
+  DAY_NAMES[state.lang].forEach((label, i)=>{
+    const btn = document.createElement('button');
+    btn.textContent = label;
+    btn.setAttribute('aria-pressed', i===state.day ? 'true':'false');
+    btn.addEventListener('click', ()=>{ state.day = i; saveState(); render(); });
+    tabs.appendChild(btn);
+  });
+}
+
+function mealLabel(meal){
+  if(meal==='b') return UI.breakfast[state.lang];
+  if(meal==='l') return UI.lunch[state.lang];
+  return UI.dinner[state.lang];
+}
+
+function renderMeals(){
+  const banner = document.getElementById('constructorBanner');
+  if(state.diet === 'newdiet'){
+    banner.textContent = UI.constructorIntro[state.lang];
+    banner.style.display = 'block';
+  } else {
+    banner.style.display = 'none';
+  }
+  const container = document.getElementById('mealsContainer');
+  container.innerHTML = '';
+  const dayData = DIETS[state.diet].days[state.day];
+  const variantsMap = {b:dayData.b, l:dayData.l, d:dayData.d};
+
+  MEAL_KEYS.forEach(meal=>{
+    const variants = variantsMap[meal];
+    const resolved = resolveMeal(state.diet, state.day, meal, variants);
+    const status = resolved.status;
+    const sched = getSchedule(state.day, meal);
+
+    const card = document.createElement('article');
+    card.className = 'meal-card' + (resolved.autoNote && resolved.autoNote.type==='contains' ? ' is-caution' : '');
+
+    const head = document.createElement('div');
+    head.className = 'meal-head';
+    const h3 = document.createElement('h3');
+    h3.textContent = mealLabel(meal);
+    const actions = document.createElement('div');
+    actions.className = 'meal-actions';
+
+    const variantBtn = document.createElement('button');
+    variantBtn.className = 'update-btn'; variantBtn.textContent = UI.updateMenuBtn[state.lang]; variantBtn.type = 'button';
+    const isFav = isFavorite(variants[getResolvedVariantIndex(state.diet, state.day, meal, variants)]);
+    const heartBtn = document.createElement('button');
+    heartBtn.className = 'heart-btn' + (isFav ? ' active' : ''); heartBtn.textContent = '♥'; heartBtn.type = 'button';
+    heartBtn.title = isFav ? UI.favoriteOffTitle[state.lang] : UI.favoriteOnTitle[state.lang];
+
+    let composeBtn = null;
+    if(state.diet === 'newdiet'){
+      composeBtn = document.createElement('button');
+      composeBtn.className = 'icon-btn'; composeBtn.textContent = '✎'; composeBtn.type = 'button';
+      composeBtn.title = UI.composeTitle[state.lang];
+    }
+
+    actions.appendChild(variantBtn); actions.appendChild(heartBtn);
+    if(composeBtn) actions.appendChild(composeBtn);
+    head.appendChild(h3); head.appendChild(actions);
+
+    const p = document.createElement('p');
+    p.className = 'meal-text';
+    p.textContent = resolved.text;
+
+    let calEl = null;
+    if(state.showCalories){
+      calEl = document.createElement('p');
+      calEl.className = 'meal-cal';
+      calEl.textContent = '≈ ' + getCalories(state.diet, meal, resolved.text) + ' ' + UI.kcalWord[state.lang];
+    }
+
+    const howEl = document.createElement('p');
+    howEl.className = 'meal-how';
+    howEl.innerHTML = '<strong>' + HOW_LABEL[state.lang] + '</strong> ' + getCookingSteps(resolved.text, state.lang);
+
+    let noteEl = null;
+    if(resolved.autoNote){
+      noteEl = document.createElement('p');
+      noteEl.className = 'meal-note';
+      const label = resolved.autoNote.type==='swapped' ? UI.swappedLabel[state.lang] : UI.containsLabel[state.lang];
+      noteEl.textContent = label + ' ' + resolved.autoNote.term;
+    }
+
+    const timeWrap = document.createElement('div');
+    timeWrap.className = 'meal-time';
+    const timeLabelEl = document.createElement('div');
+    timeLabelEl.className = 'meal-time-row';
+    const lbl = document.createElement('label');
+    lbl.textContent = UI.timeLabel[state.lang];
+    const timeInput = document.createElement('input');
+    timeInput.type = 'time';
+    timeInput.value = sched.time || '';
+    const bell = document.createElement('button');
+    bell.type = 'button';
+    bell.className = 'bell-btn' + (sched.reminder ? ' active' : '');
+    bell.textContent = '🔔';
+    bell.title = sched.reminder ? UI.reminderOffTitle[state.lang] : UI.reminderOnTitle[state.lang];
+    timeLabelEl.appendChild(lbl); timeLabelEl.appendChild(timeInput); timeLabelEl.appendChild(bell);
+    const hint = document.createElement('p');
+    hint.className = 'meal-time-hint';
+    hint.textContent = UI.reminderHint[state.lang];
+    timeWrap.appendChild(timeLabelEl);
+    timeWrap.appendChild(hint);
+
+    card.appendChild(head);
+    card.appendChild(p);
+    if(calEl) card.appendChild(calEl);
+    card.appendChild(howEl);
+    if(noteEl) card.appendChild(noteEl);
+    card.appendChild(timeWrap);
+    container.appendChild(card);
+
+    variantBtn.addEventListener('click', ()=>{ cycleVariant(state.diet, state.day, meal, variants.length); render(); });
+    heartBtn.addEventListener('click', ()=>{
+      const idx = getResolvedVariantIndex(state.diet, state.day, meal, variants);
+      toggleFavorite(variants[idx], meal);
+      render();
+    });
+    if(composeBtn){
+      composeBtn.addEventListener('click', ()=>{
+        const box = document.createElement('div');
+        box.className = 'meal-edit-box';
+
+        let select = null;
+        if(state.customDishes.length){
+          select = document.createElement('select');
+          select.className = 'meal-edit-select';
+          const optBlank = document.createElement('option');
+          optBlank.value = ''; optBlank.textContent = UI.customSelectPlaceholder[state.lang];
+          select.appendChild(optBlank);
+          state.customDishes.forEach(d=>{
+            const opt = document.createElement('option');
+            opt.value = d.name; opt.textContent = d.name;
+            select.appendChild(opt);
+          });
+          box.appendChild(select);
+        }
+
+        const input = document.createElement('input');
+        input.type = 'text'; input.className = 'meal-edit-input'; input.value = p.textContent;
+        box.appendChild(input);
+
+        const btnRow = document.createElement('div');
+        btnRow.className = 'meal-edit-btns';
+        const saveBtn = document.createElement('button');
+        saveBtn.type = 'button'; saveBtn.className = 'edit-save'; saveBtn.textContent = '✓';
+        const cancelBtn = document.createElement('button');
+        cancelBtn.type = 'button'; cancelBtn.className = 'edit-cancel'; cancelBtn.textContent = '×';
+        btnRow.appendChild(saveBtn); btnRow.appendChild(cancelBtn);
+        box.appendChild(btnRow);
+
+        card.replaceChild(box, p);
+        input.focus(); input.select();
+
+        if(select){
+          select.addEventListener('change', ()=>{
+            if(select.value) input.value = select.value;
+          });
+        }
+        const commit = ()=>{
+          const val = input.value.trim();
+          if(val) setMealText(state.diet, state.day, meal, state.lang, val);
+          render();
+        };
+        saveBtn.addEventListener('click', commit);
+        cancelBtn.addEventListener('click', ()=> render());
+        input.addEventListener('keydown', ev=>{
+          if(ev.key === 'Enter'){ commit(); }
+          if(ev.key === 'Escape'){ render(); }
+        });
+      });
+    }
+    timeInput.addEventListener('change', ()=> setScheduleTime(state.day, meal, timeInput.value));
+    bell.addEventListener('click', ()=>{ toggleReminder(state.day, meal); render(); });
+  });
+}
+
+function renderArticles(){
+  const list = document.getElementById('articlesList');
+  list.innerHTML = '';
+  ARTICLES.forEach(a=>{
+    const details = document.createElement('details');
+    details.className = 'article';
+    const summary = document.createElement('summary');
+    summary.textContent = a.title[state.lang];
+    const p = document.createElement('p');
+    p.className = 'body';
+    p.textContent = a.body[state.lang];
+    details.appendChild(summary); details.appendChild(p);
+    list.appendChild(details);
+  });
+}
+
+function renderForbidden(){
+  const chips = document.getElementById('forbiddenChips');
+  chips.innerHTML = '';
+  const empty = document.getElementById('forbiddenEmpty');
+  if(state.forbidden.length === 0){
+    empty.style.display = 'block';
+  } else {
+    empty.style.display = 'none';
+    state.forbidden.forEach((term, i)=>{
+      const chip = document.createElement('button');
+      chip.type = 'button'; chip.className = 'chip';
+      chip.textContent = term + ' ×';
+      chip.addEventListener('click', ()=>{
+        state.forbidden.splice(i,1); saveState(); renderForbidden(); render();
+      });
+      chips.appendChild(chip);
+    });
+  }
+}
+
+function renderFavorites(){
+  const list = document.getElementById('favoritesList');
+  list.innerHTML = '';
+  const empty = document.getElementById('favoritesEmpty');
+  if(state.favorites.length === 0){
+    empty.style.display = 'block'; empty.textContent = UI.favoritesEmpty[state.lang];
+    return;
+  }
+  empty.style.display = 'none';
+  state.favorites.forEach((f, i)=>{
+    const row = document.createElement('div');
+    row.className = 'fav-item';
+    const left = document.createElement('div');
+    const strong = document.createElement('strong');
+    strong.textContent = f[state.lang] || f.ru;
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+    meta.textContent = mealLabel(f.meal) + (DIETS[f.diet] ? ' · ' + DIETS[f.diet].name[state.lang] : '');
+    left.appendChild(strong); left.appendChild(meta);
+    const rm = document.createElement('button');
+    rm.className = 'item-remove'; rm.textContent = '×'; rm.type = 'button';
+    rm.addEventListener('click', ()=>{ state.favorites.splice(i,1); saveState(); renderFavorites(); render(); });
+    row.appendChild(left); row.appendChild(rm);
+    list.appendChild(row);
+  });
+}
+
+function renderCustom(){
+  const list = document.getElementById('customList');
+  list.innerHTML = '';
+  const empty = document.getElementById('customEmpty');
+  if(state.customDishes.length === 0){
+    empty.style.display = 'block'; empty.textContent = UI.customEmpty[state.lang];
+  } else {
+    empty.style.display = 'none';
+    state.customDishes.forEach((d, i)=>{
+      const row = document.createElement('div');
+      row.className = 'custom-item';
+      const left = document.createElement('div');
+      const strong = document.createElement('strong');
+      strong.textContent = d.name;
+      left.appendChild(strong);
+      if(d.how){
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+        meta.textContent = d.how;
+        left.appendChild(meta);
+      }
+      const rm = document.createElement('button');
+      rm.className = 'item-remove'; rm.textContent = '×'; rm.type = 'button';
+      rm.addEventListener('click', ()=>{ state.customDishes.splice(i,1); saveState(); renderCustom(); });
+      row.appendChild(left); row.appendChild(rm);
+      list.appendChild(row);
+    });
+  }
+}
+
+function renderSymptoms(){
+  const list = document.getElementById('symptomsList');
+  list.innerHTML = '';
+  const empty = document.getElementById('symptomsEmpty');
+  if(state.symptoms.length === 0){
+    empty.style.display = 'block'; empty.textContent = UI.symptomsEmpty[state.lang];
+  } else {
+    empty.style.display = 'none';
+    state.symptoms.forEach((s, i)=>{
+      const row = document.createElement('div');
+      row.className = 'symptom-item';
+      const left = document.createElement('div');
+      const strong = document.createElement('strong');
+      strong.textContent = s.food;
+      left.appendChild(strong);
+      const meta = document.createElement('div');
+      meta.className = 'meta';
+      meta.textContent = (s.note ? s.note + ' — ' : '') + (s.date || '');
+      left.appendChild(meta);
+      const rm = document.createElement('button');
+      rm.className = 'item-remove'; rm.textContent = '×'; rm.type = 'button';
+      rm.addEventListener('click', ()=>{ state.symptoms.splice(i,1); saveState(); renderSymptoms(); });
+      row.appendChild(left); row.appendChild(rm);
+      list.appendChild(row);
+    });
+  }
+}
+
+function renderBuy(){
+  const chips = document.getElementById('buyChips');
+  chips.innerHTML = '';
+  const empty = document.getElementById('buyEmpty');
+  if(state.shoppingList.length === 0){
+    empty.style.display = 'block'; empty.textContent = UI.buyEmpty[state.lang];
+  } else {
+    empty.style.display = 'none';
+    state.shoppingList.forEach((item, i)=>{
+      const chip = document.createElement('button');
+      chip.type = 'button'; chip.className = 'chip buy-chip';
+      chip.textContent = item + ' ×';
+      chip.addEventListener('click', ()=>{
+        state.shoppingList.splice(i,1); saveState(); renderBuy();
+      });
+      chips.appendChild(chip);
+    });
+  }
+}
+
+function renderTexts(){
+  document.getElementById('t-title').textContent = UI.title[state.lang];
+  document.getElementById('t-subtitle').textContent = UI.subtitle[state.lang];
+  document.getElementById('t-dietTitle').textContent = UI.dietTitle[state.lang];
+  document.getElementById('t-articlesBtn').textContent = UI.articlesBtn[state.lang];
+  document.getElementById('t-forbiddenBtn').textContent = UI.forbiddenBtn[state.lang];
+  document.getElementById('t-fridgeBtn').textContent = UI.fridgeBtn[state.lang];
+  document.getElementById('t-favoritesBtn').textContent = UI.favoritesBtn[state.lang];
+  document.getElementById('t-customBtn').textContent = UI.customBtn[state.lang];
+  document.getElementById('t-articlesTitle2').textContent = UI.articlesBtn[state.lang];
+  document.getElementById('t-articlesSubtitle').textContent = UI.articlesSubtitle[state.lang];
+  document.getElementById('t-forbiddenTitle').textContent = UI.forbiddenBtn[state.lang];
+  document.getElementById('forbiddenInput').placeholder = UI.forbiddenPlaceholder[state.lang];
+  document.getElementById('forbiddenAddBtn').textContent = UI.addBtn[state.lang];
+  document.getElementById('forbiddenEmpty').textContent = UI.forbiddenEmpty[state.lang];
+  document.getElementById('t-forbiddenNote').textContent = UI.forbiddenNote[state.lang];
+  document.getElementById('t-fridgeTitle').textContent = UI.fridgeBtn[state.lang];
+  document.getElementById('t-fridgeIntro').textContent = UI.fridgeIntro[state.lang];
+  document.getElementById('fridgeInput').placeholder = UI.fridgePlaceholder[state.lang];
+  document.getElementById('fridgeFindBtn').textContent = UI.findBtn[state.lang];
+  document.getElementById('t-fridgeConsent').textContent = UI.fridgeConsent[state.lang];
+  document.getElementById('t-favoritesTitle2').textContent = UI.favoritesBtn[state.lang];
+  document.getElementById('t-customTitle2').textContent = UI.customBtn[state.lang];
+  document.getElementById('t-customIntro').textContent = UI.customIntro[state.lang];
+  document.getElementById('customNameInput').placeholder = UI.customNamePlaceholder[state.lang];
+  document.getElementById('customHowInput').placeholder = UI.customHowPlaceholder[state.lang];
+  document.getElementById('customAddBtn').textContent = UI.addBtn[state.lang];
+  document.getElementById('t-profileLabel').textContent = UI.profileLabel[state.lang];
+  document.getElementById('newProfileInput').placeholder = UI.newProfilePrompt[state.lang];
+  document.getElementById('t-caloriesToggle').textContent = UI.caloriesToggle[state.lang];
+  document.getElementById('caloriesToggleBtn').title = state.showCalories ? UI.caloriesOffTitle[state.lang] : UI.caloriesOnTitle[state.lang];
+  document.getElementById('caloriesToggleBtn').classList.toggle('active', state.showCalories);
+  document.getElementById('t-buyBtn').textContent = UI.buyBtn[state.lang];
+  document.getElementById('t-buyTitle2').textContent = UI.buyBtn[state.lang];
+  document.getElementById('t-buyIntro').textContent = UI.buyIntro[state.lang];
+  document.getElementById('buyInput').placeholder = UI.buyPlaceholder[state.lang];
+  document.getElementById('buyAddBtn').textContent = UI.addBtn[state.lang];
+  document.getElementById('t-symptomsBtn').textContent = UI.symptomsBtn[state.lang];
+  document.getElementById('t-symptomsTitle2').textContent = UI.symptomsBtn[state.lang];
+  document.getElementById('t-symptomsIntro').textContent = UI.symptomsIntro[state.lang];
+  document.getElementById('symptomFoodInput').placeholder = UI.symptomFoodPlaceholder[state.lang];
+  document.getElementById('symptomNoteInput').placeholder = UI.symptomNotePlaceholder[state.lang];
+  document.getElementById('symptomAddBtn').textContent = UI.addBtn[state.lang];
+  document.getElementById('t-footer').textContent = UI.footer[state.lang];
+  const warnEl = document.getElementById('storageWarning');
+  if(warnEl.style.display !== 'none'){ warnEl.textContent = UI.storageWarning[state.lang]; }
+  document.documentElement.lang = state.lang;
+  document.querySelectorAll('.lang-switch button').forEach(b=>{
+    b.setAttribute('aria-pressed', b.dataset.lang===state.lang ? 'true':'false');
+  });
+  document.querySelectorAll('.modal-close').forEach(b=>{ b.title = UI.close[state.lang]; });
+}
+
+function render(){
+  renderTexts();
+  renderDietRow();
+  renderDayTabs();
+  renderMeals();
+  renderArticles();
+  renderForbidden();
+  renderFavorites();
+  renderCustom();
+  renderSymptoms();
+  renderBuy();
+  renderProfileSelect();
+}
+
+document.querySelectorAll('.lang-switch button').forEach(b=>{
+  b.addEventListener('click', ()=>{ state.lang = b.dataset.lang; saveState(); render(); });
+});
+
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+document.getElementById('btnArticles').addEventListener('click', ()=> openModal('modalArticles'));
+document.getElementById('btnForbidden').addEventListener('click', ()=> openModal('modalForbidden'));
+document.getElementById('btnFridge').addEventListener('click', ()=> openModal('modalFridge'));
+document.getElementById('btnFavorites').addEventListener('click', ()=> openModal('modalFavorites'));
+document.getElementById('btnCustom').addEventListener('click', ()=> openModal('modalCustom'));
+document.getElementById('btnSymptoms').addEventListener('click', ()=> openModal('modalSymptoms'));
+document.getElementById('symptomAddBtn').addEventListener('click', ()=>{
+  const foodInput = document.getElementById('symptomFoodInput');
+  const noteInput = document.getElementById('symptomNoteInput');
+  const food = foodInput.value.trim();
+  if(!food) return;
+  const today = new Date().toISOString().slice(0,10);
+  state.symptoms.unshift({food: food, note: noteInput.value.trim(), date: today});
+  saveState();
+  foodInput.value = ''; noteInput.value = '';
+  renderSymptoms();
+});
+
+document.getElementById('caloriesToggleBtn').addEventListener('click', ()=>{
+  state.showCalories = !state.showCalories;
+  saveState();
+  render();
+});
+document.getElementById('btnBuy').addEventListener('click', ()=> openModal('modalBuy'));
+document.getElementById('buyAddBtn').addEventListener('click', ()=>{
+  const input = document.getElementById('buyInput');
+  const val = input.value.trim();
+  if(!val) return;
+  if(!state.shoppingList.some(t=>t.toLowerCase()===val.toLowerCase())){
+    state.shoppingList.push(val); saveState();
+  }
+  input.value = '';
+  renderBuy();
+});
+document.getElementById('buyInput').addEventListener('keydown', ev=>{
+  if(ev.key === 'Enter'){ document.getElementById('buyAddBtn').click(); }
+});
+document.getElementById('customAddBtn').addEventListener('click', ()=>{
+  const nameInput = document.getElementById('customNameInput');
+  const howInput = document.getElementById('customHowInput');
+  const name = nameInput.value.trim();
+  if(!name) return;
+  state.customDishes.push({name: name, how: howInput.value.trim()});
+  saveState();
+  nameInput.value = ''; howInput.value = '';
+  renderCustom();
+});
+document.querySelectorAll('.modal-close').forEach(b=>{
+  b.addEventListener('click', ()=> closeModal(b.dataset.close));
+});
+document.querySelectorAll('.modal-overlay').forEach(ov=>{
+  ov.addEventListener('click', (e)=>{ if(e.target === ov) closeModal(ov.id); });
+});
+
+document.getElementById('forbiddenAddBtn').addEventListener('click', ()=>{
+  const input = document.getElementById('forbiddenInput');
+  const val = input.value.trim();
+  if(!val) return;
+  if(!state.forbidden.some(t=>t.toLowerCase()===val.toLowerCase())){
+    state.forbidden.push(val); saveState();
+  }
+  input.value = '';
+  renderForbidden(); render();
+});
+document.getElementById('forbiddenInput').addEventListener('keydown', ev=>{
+  if(ev.key === 'Enter'){ document.getElementById('forbiddenAddBtn').click(); }
+});
+
+document.getElementById('fridgeFindBtn').addEventListener('click', async ()=>{
+  const input = document.getElementById('fridgeInput');
+  const result = document.getElementById('fridgeResult');
+  const btn = document.getElementById('fridgeFindBtn');
+  const ingredients = input.value.trim();
+  if(!ingredients){
+    result.textContent = UI.emptyInput[state.lang];
+    result.classList.add('show');
+    return;
+  }
+  btn.disabled = true;
+  result.textContent = UI.loadingText[state.lang];
+  result.classList.add('show');
+  try{
+    const sample = (typeof claude !== 'undefined') ? await claude.use('sample') : null;
+    if(!sample){
+      result.textContent = UI.unavailableText[state.lang];
+      btn.disabled = false;
+      return;
+    }
+    const dietName = DIETS[state.diet].name[state.lang];
+    const langNames = {ru:'русском', en:'English', es:'español'};
+    const forbiddenLine = state.forbidden.length ? ('Не используй эти продукты: ' + state.forbidden.join(', ') + '. ') : '';
+    const prompt = 'Пользователь придерживается диеты "' + dietName + '". У него есть продукты: ' + ingredients + '. ' +
+      forbiddenLine + 'Предложи одно блюдо, которое можно приготовить в основном из этих продуктов и которое подходит под эту диету. ' +
+      'Ответь коротко: первая строка — название блюда, затем 3-5 шагов приготовления. Пиши на языке: ' + langNames[state.lang] + '.';
+    const res = await sample(prompt);
+    result.textContent = res.text;
+  }catch(e){
+    result.textContent = UI.unavailableText[state.lang];
+  }
+  btn.disabled = false;
+});
+
+function storageAvailable(){
+  try{
+    const k = '__hive_test__';
+    localStorage.setItem(k, '1');
+    localStorage.removeItem(k);
+    return true;
+  }catch(e){ return false; }
+}
+try{
+  if(!storageAvailable()){
+    const w = document.getElementById('storageWarning');
+    w.textContent = UI.storageWarning[state.lang];
+    w.style.display = 'block';
+  }
+  render();
+  armAllReminders();
+}catch(err){
+  try{
+    const w = document.getElementById('storageWarning');
+    w.textContent = 'Ошибка загрузки страницы: ' + (err && err.message ? err.message : err) + '. Попробуйте обновить страницу.';
+    w.style.display = 'block';
+  }catch(e2){}
+  if(typeof console !== 'undefined' && console.error) console.error('Hive init error:', err);
+}
+</script>
+</body>
+</html>
